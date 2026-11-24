@@ -328,6 +328,9 @@ const REASONS: Record<string, string> = {
   CONFIG: 'Config error',
 };
 
+/** Plain-language name of a reason code; unknown codes pass through. */
+export const codeLabel = (code: string): string => REASONS[code] ?? code;
+
 /** Short, plain-language reason for a cell without a usable price. */
 export const reasonLabel = (row: PriceRow): string =>
   (row.code && REASONS[row.code]) ||

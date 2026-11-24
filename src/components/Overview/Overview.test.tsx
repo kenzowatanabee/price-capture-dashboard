@@ -58,7 +58,7 @@ describe('Overview', () => {
     )!;
     expect(indiana).toHaveTextContent('1/2');
     expect(indiana).toHaveTextContent('1 not purchasable');
-    expect(indiana).toHaveTextContent('NOT_LISTED 1');
+    expect(indiana).toHaveTextContent('Not listed 1');
     expect(within(indiana).getByRole('meter')).toHaveAttribute(
       'aria-valuenow',
       '1',

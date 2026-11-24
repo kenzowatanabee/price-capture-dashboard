@@ -4,12 +4,20 @@ A Domo custom app for the prices collected by [price-capture](https://github.com
 
 ## Screens
 
-- **Overview:** the latest run's share of SKUs with a price, the share that can actually be bought (VTEX cart check), errors, and per-store health with the main reasons a price is missing (`NOT_LISTED`, `OUT_OF_STOCK`, ...).
-- **Price matrix:** each SKU's latest price at every store.
-  - The cheapest store is highlighted, and a badge shows the discount against the store's own list price.
-  - A price that cannot be bought is struck through, and is left out of the cheapest store, the min/max and the spread.
-  - Click a SKU to open its history.
-- **Price history:** one line per store, one point per day (the last price of that day), plus each store's latest, lowest and highest price.
+- **Header:** when the latest run happened (Brasília time) and a warning when no new run has arrived for more than 30 hours.
+- **Overview:**
+  - Tiles for the share of checks with a price, the share that can actually be bought (VTEX cart check), the SKU × store grid and errors.
+  - **Price position:** each store's average premium over the cheapest purchasable offer of the same SKU, cheapest store first, with how often it is the cheapest and how much of it is on promotion.
+  - **Coverage:** SKUs with a price per store, plus the main reasons a price is missing (Not listed, Out of stock, ...).
+- **Price matrix:** each SKU's latest price at every store, store columns in the same cheapest-first order.
+  - Every price shows its premium over the lowest ("+13.3% vs lowest"), and the cell tint gets darker as the premium grows. The lowest is marked "▼ Lowest".
+  - A badge shows the discount against the store's own list price.
+  - A price that cannot be bought is struck through, and is left out of the lowest price and the price gap.
+  - Search, sort by the biggest price gap, and click a SKU to open its history.
+- **Price history:** one step line per store, one point per day (the last price of that day).
+  - Up to 3 stores are highlighted in colour and the rest stay grey. Click a store in the side list to swap.
+  - Hover for every store's price on that day, or switch to the table view.
+  - The side list shows each store's latest, lowest and highest price.
 
 ## Data
 

@@ -4,7 +4,11 @@ import { Card, StatTile } from 'components/charts/StatTile';
 import { StatusTag } from 'components/charts/StatusTag';
 import { type FC } from 'react';
 import { formatPct, formatPremium } from 'utils/format';
-import type { Overview as OverviewData, StoreComparison } from 'utils/insights';
+import {
+  codeLabel,
+  type Overview as OverviewData,
+  type StoreComparison,
+} from 'utils/insights';
 
 import styles from './Overview.module.scss';
 
@@ -91,7 +95,7 @@ export const Overview: FC<OverviewProps> = ({ overview: o, comparison }) => {
               const reasons = s.topCodes
                 .filter((c) => c.code !== 'NOT_PURCHASABLE')
                 .slice(0, 3)
-                .map((c) => `${c.code} ${c.count}`)
+                .map((c) => `${codeLabel(c.code)} ${c.count}`)
                 .join(' · ');
               return {
                 key: s.store,
