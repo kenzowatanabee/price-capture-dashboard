@@ -47,3 +47,24 @@ export const formatAge = (hours: number): string => {
   if (hours < 48) return `${Math.round(hours)} h ago`;
   return `${Math.round(hours / 24)} days ago`;
 };
+
+const MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+/** "2026-11-20" -> "20 Nov". */
+export const shortDate = (date: string): string => {
+  const [, m, d] = date.split('-').map(Number);
+  return m && d ? `${d} ${MONTHS[m - 1]}` : date;
+};

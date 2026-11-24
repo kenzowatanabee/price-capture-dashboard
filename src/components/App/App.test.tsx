@@ -55,8 +55,8 @@ describe('App (with a fake Domo)', () => {
       'aria-selected',
       'true',
     );
-    const summary = await screen.findByRole('table', { name: 'Price summary' });
-    expect(within(summary).getAllByRole('row')).toHaveLength(1 + 2);
+    const summary = await screen.findByRole('list', { name: 'Price summary' });
+    expect(within(summary).getAllByRole('button')).toHaveLength(2);
     expect(screen.getByRole('combobox', { name: 'SKU' })).toHaveValue(
       '7509546060781',
     );

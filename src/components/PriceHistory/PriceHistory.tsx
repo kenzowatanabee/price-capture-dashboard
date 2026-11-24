@@ -1,7 +1,8 @@
-import { type FC, lazy, Suspense, useEffect, useMemo } from 'react';
+import { type FC, lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'reducers';
 import { loadHistory, selectHistory } from 'reducers/prices/slice';
 import type { PriceRow } from 'services/prices';
+import { defaultSlots, type SlotMap, toggleHighlight } from 'utils/colors';
 import { buildHistory } from 'utils/insights';
 
 import styles from './PriceHistory.module.scss';
@@ -44,6 +45,10 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
 
   const series = useMemo(() => buildHistory(history.rows), [history.rows]);
 
+  // highlight the cheapest stores of the latest day; a new SKU starts from its own cheapest
+  const [slots, setSlots] = useState<SlotMap>({});
+  useEffect(() => setSlots(defaultSlots(series)), [series]);
+
   if (!skus.length) {
     return <div className={styles.status}>No SKUs in the latest run.</div>;
   }
@@ -74,7 +79,13 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
         <Suspense
           fallback={<div className={styles.status}>Loading chart…</div>}
         >
-          <HistoryChart series={series} />
+          <HistoryChart
+            series={series}
+            slots={slots}
+            onToggle={(store) =>
+              setSlots((current) => toggleHighlight(current, store))
+            }
+          />
         </Suspense>
       )}
     </div>
