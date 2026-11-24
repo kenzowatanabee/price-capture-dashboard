@@ -6,6 +6,15 @@ const brl = new Intl.NumberFormat('pt-BR', {
 export const formatBRL = (value: number | null | undefined): string =>
   value == null ? '—' : brl.format(value);
 
+const amount = new Intl.NumberFormat('pt-BR', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/** A price without the currency symbol ("21,99"), for dense tables that state the currency once. */
+export const formatAmount = (value: number | null | undefined): string =>
+  value == null ? '—' : amount.format(value);
+
 /** 0.0712 -> "7%"; null -> "—". */
 export const formatPct = (
   value: number | null | undefined,

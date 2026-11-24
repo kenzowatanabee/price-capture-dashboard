@@ -5,13 +5,14 @@ A Domo custom app for the prices collected by [price-capture](https://github.com
 ## Screens
 
 - **Header:** a headline that names the cheapest store of the latest run, when that run happened (Brasília time), and a warning when no new run has arrived for more than 30 hours.
-  - The fonts (Inter and Instrument Serif) are bundled with the app, so it needs no external font service inside Domo.
+  - The font (Inter) is bundled with the app, so it needs no external font service inside Domo.
 - **Overview:**
   - Tiles for the share of checks with a price, the share that can actually be bought (VTEX cart check), the SKU × store grid and errors.
   - **Price position:** each store's average premium over the cheapest purchasable offer of the same SKU, cheapest store first, with how often it is the cheapest and how much of it is on promotion.
   - **Coverage:** SKUs with a price per store, plus the main reasons a price is missing (Not listed, Out of stock, ...).
 - **Price matrix:** each SKU's latest price at every store, store columns in the same cheapest-first order.
-  - Every price shows its premium over the lowest ("+13.3% vs lowest"), and the cell tint gets darker as the premium grows. The lowest is marked "▼ Lowest".
+  - All store columns share the width equally, so every store fits on one screen. Prices are in R$, stated once in the legend.
+  - Every price shows its premium over the lowest ("+13.3%"), and the cell tint gets darker as the premium grows. The lowest is marked "▼ Lowest".
   - A badge shows the discount against the store's own list price.
   - A price that cannot be bought is struck through, and is left out of the lowest price and the price gap.
   - Search, sort by the biggest price gap, and click a SKU to open its history.

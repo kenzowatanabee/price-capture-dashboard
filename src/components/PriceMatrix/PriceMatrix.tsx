@@ -1,6 +1,6 @@
 import { type FC, useMemo, useState } from 'react';
 import type { PriceRow } from 'services/prices';
-import { discount, formatBRL, formatPct, formatPremium } from 'utils/format';
+import { discount, formatAmount, formatPct, formatPremium } from 'utils/format';
 import {
   cellPremium,
   type Matrix,
@@ -58,7 +58,7 @@ const Cell: FC<{ row: PriceRow | undefined; min: number | null }> = ({
             !
           </span>
         )}
-        <span className={styles.price}>{formatBRL(row.price)}</span>
+        <span className={styles.price}>{formatAmount(row.price)}</span>
         {off != null && <span className={styles.promo}>−{formatPct(off)}</span>}
       </div>
       <div className={styles.sub}>
@@ -67,7 +67,7 @@ const Cell: FC<{ row: PriceRow | undefined; min: number | null }> = ({
           : step === 0
             ? '▼ Lowest'
             : premium != null
-              ? `${formatPremium(premium)} vs lowest`
+              ? formatPremium(premium)
               : ''}
       </div>
     </td>
@@ -150,6 +150,13 @@ export const PriceMatrix: FC<PriceMatrixProps> = ({
 
         <div className={styles.scroll}>
           <table aria-label="Price matrix">
+            <colgroup>
+              <col className={styles.colSku} />
+              {stores.map((store) => (
+                <col key={store} />
+              ))}
+              <col className={styles.colGap} />
+            </colgroup>
             <thead>
               <tr>
                 <th className={styles.sku}>SKU</th>
@@ -208,7 +215,7 @@ export const PriceMatrix: FC<PriceMatrixProps> = ({
             className={styles.scale}
             aria-label="Premium over the lowest purchasable price"
           >
-            Above the lowest:
+            Prices in R$ · % above the lowest:
             {LEGEND_STEPS.map(([cls, text]) => (
               <span key={text} className={styles.scaleStep}>
                 <span className={`${styles.swatch} ${cls}`} />

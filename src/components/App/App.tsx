@@ -29,11 +29,11 @@ const TABS: { id: Tab; label: string }[] = [
 
 const TAB_COPY: Record<Exclude<Tab, 'overview'>, Headline> = {
   matrix: {
-    title: 'Every SKU, at every store.',
+    title: 'Price matrix',
     lede: 'The latest price of each SKU, and how far each store sits above the lowest purchasable offer.',
   },
   history: {
-    title: 'How prices moved.',
+    title: 'Price history',
     lede: 'One line per store, using the last price captured each day.',
   },
 };
@@ -42,22 +42,6 @@ const FALLBACK: Headline = {
   title: 'Store prices, side by side.',
   lede: 'Daily prices of the tracked SKUs across Brazilian pharmacy chains.',
 };
-
-/** Decorative hills behind the header; carries no data. */
-const HeroArt: FC = () => (
-  <div className={styles.art} aria-hidden="true">
-    <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
-      <path
-        className={styles.hillBack}
-        d="M0,210 C220,120 430,140 650,196 C870,252 1060,104 1440,160 L1440,320 L0,320 Z"
-      />
-      <path
-        className={styles.hillFront}
-        d="M0,286 C300,206 520,300 800,252 C1040,210 1240,256 1440,214 L1440,320 L0,320 Z"
-      />
-    </svg>
-  </div>
-);
 
 const Logo: FC = () => (
   <svg className={styles.logo} viewBox="0 0 28 28" aria-hidden="true">
@@ -138,7 +122,6 @@ export const App: FC = () => {
   return (
     <div className={styles.App}>
       <header className={styles.hero}>
-        <HeroArt />
         <div className={styles.bar}>
           <div className={styles.brand}>
             <Logo />
@@ -157,27 +140,32 @@ export const App: FC = () => {
               </button>
             ))}
           </nav>
-          {ready && age != null && (
-            <div className={styles.fresh}>
-              {age > STALE_AFTER_HOURS ? (
-                <StatusTag
-                  kind="warning"
-                  label={`No new run for ${formatAge(age).replace(' ago', '')}`}
-                />
-              ) : (
-                <StatusTag kind="good" label={`Updated ${formatAge(age)}`} />
+          {ready && (
+            <div className={styles.run}>
+              <span>
+                Latest run: {overview.fetchedAtBrt.slice(0, 16) || '—'}{' '}
+                (Brasília) · {latest.runId}
+              </span>
+              {age != null && (
+                <span className={styles.fresh}>
+                  {age > STALE_AFTER_HOURS ? (
+                    <StatusTag
+                      kind="warning"
+                      label={`No new run for ${formatAge(age).replace(' ago', '')}`}
+                    />
+                  ) : (
+                    <StatusTag
+                      kind="good"
+                      label={`Updated ${formatAge(age)}`}
+                    />
+                  )}
+                </span>
               )}
             </div>
           )}
         </div>
 
         <div className={styles.heroBody}>
-          {ready && (
-            <p className={styles.eyebrow}>
-              Latest run: {overview.fetchedAtBrt.slice(0, 16) || '—'} (Brasília)
-              · {latest.runId}
-            </p>
-          )}
           <h1>{copy.title}</h1>
           <p className={styles.lede}>{copy.lede}</p>
         </div>

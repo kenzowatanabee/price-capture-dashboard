@@ -143,7 +143,9 @@ export const toDataRow = (row: PriceRow): DataRow => ({
 });
 
 /** A fake Domo: answers the app's queries from the fixtures above. */
-export const fakeDomo = (overrides: { fail?: boolean } = {}) => {
+export const fakeDomo = (
+  overrides: { fail?: boolean; run?: PriceRow[] } = {},
+) => {
   const queries: DataQuery[] = [];
   const query = async (q: DataQuery): Promise<DataRow[]> => {
     queries.push(q);
@@ -152,7 +154,7 @@ export const fakeDomo = (overrides: { fail?: boolean } = {}) => {
     if (!filter && q.limit === 1)
       return [{ run_id: 'gh-1001-1', fetched_at: '2026-11-20T15:03:12' }];
     if (filter?.column === 'run_id' && filter.equals === 'gh-1001-1')
-      return latestRun.map(toDataRow);
+      return (overrides.run ?? latestRun).map(toDataRow);
     if (filter?.column === 'ean' && filter.equals === '7509546060781')
       return babyHistory.map(toDataRow);
     return [];

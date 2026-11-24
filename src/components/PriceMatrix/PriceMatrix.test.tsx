@@ -27,7 +27,7 @@ describe('PriceMatrix', () => {
     expect(lowest).toHaveTextContent('▼ Lowest');
     expect(lowest).toHaveAttribute('data-step', '0');
     const dsp = cellFor('LUMINOUS', 'Drogaria São Paulo'); // 10.19 vs 8.99
-    expect(dsp).toHaveTextContent('+13.3% vs lowest');
+    expect(dsp).toHaveTextContent('+13.3%');
     expect(dsp).toHaveAttribute('data-step', '2');
     expect(cellFor('LUMINOUS', 'Drogasil')).toHaveAttribute('data-step', '4'); // +70%
   });
