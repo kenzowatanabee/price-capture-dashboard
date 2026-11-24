@@ -89,6 +89,117 @@
                "columnName": "seller_cnpj"
             }
          ]
+      },
+      {
+         "dataSetId": "a44545ef-1287-4552-b974-8d38fcc721a5",
+         "alias": "fct_drugs_price_snapshots",
+         "fields": [
+            {
+               "alias": "ean",
+               "columnName": "ean"
+            },
+            {
+               "alias": "desc_sku",
+               "columnName": "desc_sku"
+            },
+            {
+               "alias": "store",
+               "columnName": "store"
+            },
+            {
+               "alias": "status",
+               "columnName": "status"
+            },
+            {
+               "alias": "price_brl",
+               "columnName": "price_brl"
+            },
+            {
+               "alias": "found_name",
+               "columnName": "found_name"
+            },
+            {
+               "alias": "fetched_at",
+               "columnName": "fetched_at"
+            },
+            {
+               "alias": "message",
+               "columnName": "message"
+            },
+            {
+               "alias": "list_price",
+               "columnName": "list_price"
+            },
+            {
+               "alias": "available",
+               "columnName": "available"
+            },
+            {
+               "alias": "url",
+               "columnName": "url"
+            },
+            {
+               "alias": "seller",
+               "columnName": "seller"
+            },
+            {
+               "alias": "run_id",
+               "columnName": "run_id"
+            },
+            {
+               "alias": "fetched_at_brt",
+               "columnName": "fetched_at_brt"
+            },
+            {
+               "alias": "image_url",
+               "columnName": "image_url"
+            },
+            {
+               "alias": "seller_id",
+               "columnName": "seller_id"
+            },
+            {
+               "alias": "seller_type",
+               "columnName": "seller_type"
+            },
+            {
+               "alias": "main_offer",
+               "columnName": "main_offer"
+            },
+            {
+               "alias": "seller_cnpj",
+               "columnName": "seller_cnpj"
+            },
+            {
+               "alias": "CATEGORY",
+               "columnName": "CATEGORY"
+            },
+            {
+               "alias": "SUB_CATEGORY",
+               "columnName": "SUB_CATEGORY"
+            },
+            {
+               "alias": "SUPPLIER",
+               "columnName": "SUPPLIER"
+            },
+            {
+               "alias": "BRAND",
+               "columnName": "BRAND"
+            },
+            {
+               "alias": "SUB_BRAND",
+               "columnName": "SUB-BRAND"
+            },
+            {
+               "alias": "SEGMENT",
+               "columnName": "SEGMENT"
+            },
+            {
+               "alias": "SUBSEGMENT",
+               "columnName": "SUBSEGMENT"
+            }
+         ],
+         "dql": null
       }
    ],
    "id": "771216f0-cdbc-4a57-98c1-9b842fda6db1",
