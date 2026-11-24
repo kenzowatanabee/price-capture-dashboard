@@ -6,7 +6,7 @@ import { describe, expect, test, vi } from 'vitest';
 
 import { PriceMatrix } from './PriceMatrix';
 
-const table = () => screen.getByRole('table', { name: 'Price matrix' });
+const table = () => screen.getByRole('table', { name: 'Matriz de preços' });
 
 const headers = () =>
   within(table())
@@ -24,10 +24,10 @@ describe('PriceMatrix', () => {
   test('the lowest price is marked by text, others show their premium and tint step', () => {
     render(<PriceMatrix matrix={buildMatrix(latestRun)} />);
     const lowest = cellFor('LUMINOUS', 'Drogaria Venancio');
-    expect(lowest).toHaveTextContent('▼ Lowest');
+    expect(lowest).toHaveTextContent('▼ Menor');
     expect(lowest).toHaveAttribute('data-step', '0');
     const dsp = cellFor('LUMINOUS', 'Drogaria São Paulo'); // 10.19 vs 8.99
-    expect(dsp).toHaveTextContent('+13.3%');
+    expect(dsp).toHaveTextContent('+13,3%');
     expect(dsp).toHaveAttribute('data-step', '2');
     expect(cellFor('LUMINOUS', 'Drogasil')).toHaveAttribute('data-step', '4'); // +70%
   });
@@ -36,10 +36,10 @@ describe('PriceMatrix', () => {
     render(<PriceMatrix matrix={buildMatrix(latestRun)} />);
     expect(cellFor('BABY', 'Drogasil')).toHaveTextContent('−7%');
     const indiana = cellFor('BABY', 'Farmácia Indiana');
-    expect(indiana).toHaveTextContent('not purchasable');
+    expect(indiana).toHaveTextContent('indisponível');
     expect(indiana).not.toHaveAttribute('data-step');
     const missing = cellFor('LUMINOUS', 'Farmácia Indiana');
-    expect(missing).toHaveTextContent('Not listed');
+    expect(missing).toHaveTextContent('Não listado');
     expect(missing).toHaveAttribute(
       'title',
       expect.stringContaining('store returned no product'),
@@ -59,15 +59,17 @@ describe('PriceMatrix', () => {
       'Drogasil',
       'Drogaria São Paulo',
       'Farmácia Indiana',
-      'Price gap',
+      'Diferença',
     ]);
   });
 
   test('sort by biggest price gap', async () => {
     render(<PriceMatrix matrix={buildMatrix(latestRun)} />);
-    await userEvent.click(screen.getByRole('button', { name: /^Sort SKUs:/ }));
     await userEvent.click(
-      screen.getByRole('option', { name: /biggest price gap/ }),
+      screen.getByRole('button', { name: /^Ordenar SKUs:/ }),
+    );
+    await userEvent.click(
+      screen.getByRole('option', { name: /maior diferença de preço/ }),
     );
     const firstRow = within(table()).getAllByRole('row')[1];
     expect(firstRow).toHaveTextContent('LUMINOUS'); // 70% gap vs 7%
@@ -76,18 +78,18 @@ describe('PriceMatrix', () => {
   test('search filters by description or EAN', async () => {
     render(<PriceMatrix matrix={buildMatrix(latestRun)} />);
     await userEvent.type(
-      screen.getByRole('searchbox', { name: 'Search SKU' }),
+      screen.getByRole('searchbox', { name: 'Buscar SKU' }),
       'luminous',
     );
-    expect(screen.getByText('1 of 2 SKUs')).toBeInTheDocument();
+    expect(screen.getByText('1 de 2 SKUs')).toBeInTheDocument();
     await userEvent.clear(
-      screen.getByRole('searchbox', { name: 'Search SKU' }),
+      screen.getByRole('searchbox', { name: 'Buscar SKU' }),
     );
     await userEvent.type(
-      screen.getByRole('searchbox', { name: 'Search SKU' }),
+      screen.getByRole('searchbox', { name: 'Buscar SKU' }),
       '7509546060781',
     );
-    expect(screen.getByText('1 of 2 SKUs')).toBeInTheDocument();
+    expect(screen.getByText('1 de 2 SKUs')).toBeInTheDocument();
   });
 
   test('SKUs without any price are hidden by default and can be shown', async () => {
@@ -103,7 +105,7 @@ describe('PriceMatrix', () => {
     render(<PriceMatrix matrix={buildMatrix(rows)} />);
     expect(screen.queryByText('NOWHERE SKU')).not.toBeInTheDocument();
     await userEvent.click(
-      screen.getByRole('checkbox', { name: /Hide SKUs without any price/ }),
+      screen.getByRole('checkbox', { name: /Ocultar SKUs sem preço/ }),
     );
     expect(screen.getByText('NOWHERE SKU')).toBeInTheDocument();
   });
@@ -168,13 +170,13 @@ describe('PriceMatrix partner sellers', () => {
     ];
     render(<PriceMatrix matrix={buildMatrix(rows)} />);
     const cell = cellFor('BABY', 'C');
-    expect(cell).toHaveTextContent('Partner only');
+    expect(cell).toHaveTextContent('Só parceiro');
     expect(cell).not.toHaveTextContent('9,00');
     expect(cell).not.toHaveAttribute('data-step');
     expect(cell).toHaveAttribute(
       'title',
-      expect.stringContaining('Sold by a partner: Duda Makeup'),
+      expect.stringContaining('Vendido por parceiro: Duda Makeup'),
     );
-    expect(cellFor('BABY', 'A')).toHaveTextContent('▼ Lowest');
+    expect(cellFor('BABY', 'A')).toHaveTextContent('▼ Menor');
   });
 });

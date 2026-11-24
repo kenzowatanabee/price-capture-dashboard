@@ -2,13 +2,13 @@ import type { DataRow, QueryFn } from './domo';
 
 /** The segmentation fields, in the order they narrow a product down. */
 export const SEGMENT_FIELDS = [
-  { key: 'category', column: 'CATEGORY', label: 'Category' },
-  { key: 'subCategory', column: 'SUB_CATEGORY', label: 'Sub-category' },
-  { key: 'supplier', column: 'SUPPLIER', label: 'Supplier' },
-  { key: 'brand', column: 'BRAND', label: 'Brand' },
-  { key: 'subBrand', column: 'SUB_BRAND', label: 'Sub-brand' }, // alias of SUB-BRAND
-  { key: 'segment', column: 'SEGMENT', label: 'Segment' },
-  { key: 'subsegment', column: 'SUBSEGMENT', label: 'Subsegment' },
+  { key: 'category', column: 'CATEGORY', label: 'Categoria' },
+  { key: 'subCategory', column: 'SUB_CATEGORY', label: 'Subcategoria' },
+  { key: 'supplier', column: 'SUPPLIER', label: 'Fornecedor' },
+  { key: 'brand', column: 'BRAND', label: 'Marca' },
+  { key: 'subBrand', column: 'SUB_BRAND', label: 'Submarca' }, // alias of SUB-BRAND
+  { key: 'segment', column: 'SEGMENT', label: 'Segmento' },
+  { key: 'subsegment', column: 'SUBSEGMENT', label: 'Subsegmento' },
 ] as const;
 
 export type SegmentKey = (typeof SEGMENT_FIELDS)[number]['key'];

@@ -19,33 +19,33 @@ const store = (
 describe('overviewHeadline', () => {
   test('names the store with the lowest average premium', () => {
     const h = overviewHeadline([store('A', 0.036), store('B', 0.2)], 2);
-    expect(h.title).toBe('A is the cheapest store right now.');
-    expect(h.lede).toContain('3.6% above the lowest purchasable offer');
-    expect(h.lede).toContain('cheapest on 1 of the 2 SKUs');
+    expect(h.title).toBe('A é a loja mais barata no momento.');
+    expect(h.lede).toContain('3,6% acima da menor oferta disponível');
+    expect(h.lede).toContain('mais barata em 1 dos 2 SKUs');
   });
 
   test('a store that is always the lowest', () => {
     const h = overviewHeadline([store('A', 0, 3, 3), store('B', 0.2)], 3);
     expect(h.lede).toBe(
-      'It has the lowest purchasable price on all 3 SKUs it shares with another store.',
+      'Tem o menor preço disponível em todos os 3 SKUs que compartilha com outra loja.',
     );
   });
 
   test('ties are not broken arbitrarily', () => {
     expect(
       overviewHeadline([store('A', 0.05), store('B', 0.05)], 2).title,
-    ).toBe('A and B are tied as the cheapest stores.');
+    ).toBe('A e B estão empatadas como as lojas mais baratas.');
     expect(
       overviewHeadline(
         [store('A', 0.05), store('B', 0.05), store('C', 0.05)],
         2,
       ).title,
-    ).toBe('3 stores are tied as the cheapest.');
+    ).toBe('3 lojas estão empatadas como as mais baratas.');
   });
 
   test('nothing to compare', () => {
     const h = overviewHeadline([store('A', null)], 1);
-    expect(h.title).toBe('Store prices, side by side.');
-    expect(h.lede).toContain('1 SKU in the latest run');
+    expect(h.title).toBe('Preços das lojas, lado a lado.');
+    expect(h.lede).toContain('1 SKU na última coleta');
   });
 });

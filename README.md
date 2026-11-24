@@ -4,6 +4,8 @@ A Domo custom app for the prices collected by [price-capture](https://github.com
 
 ## Screens
 
+The interface is in Brazilian Portuguese, for the Brazil sales and retail marketing teams: all labels and messages, percentages with a decimal comma, and dates as dd/mm/yyyy. The descriptions below use the English names of each screen; in the app they are Visão geral, Produtos, Matriz de preços and Histórico de preços.
+
 - **Header:** a headline that names the cheapest store of the latest run, when that run happened (Brasília time), and a warning when no new run has arrived for more than 30 hours.
   - The font (Inter) is bundled with the app, so it needs no external font service inside Domo.
 - **Product filters:** one dropdown per segmentation field (category, sub-category, supplier, brand, sub-brand, segment, subsegment), shown on every tab. A choice narrows all tabs at once. Each dropdown only offers values that still lead to products, with the number of products beside it. A dropdown with more than 8 options gets a search box.

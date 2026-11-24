@@ -165,10 +165,10 @@ export const Dropdown: FC<DropdownProps> = ({
             <input
               type="text"
               className={styles.search}
-              aria-label={`Search ${label}`}
+              aria-label={`Buscar ${label}`}
               aria-controls={`${id}-list`}
               aria-activedescendant={activeId}
-              placeholder="Type to search"
+              placeholder="Digite para buscar"
               autoComplete="off"
               // the list just opened because the user asked for it, so typing can start at once
               autoFocus
@@ -209,7 +209,7 @@ export const Dropdown: FC<DropdownProps> = ({
             ))}
             {!shown.length && (
               <li className={styles.none} role="presentation">
-                Nothing matches “{query.trim()}”.
+                Nenhum resultado para “{query.trim()}”.
               </li>
             )}
           </ul>

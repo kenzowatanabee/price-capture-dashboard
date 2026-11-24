@@ -93,7 +93,9 @@ export const HistoryChart: FC<HistoryChartProps> = ({
 
   if (!series.points.length) {
     return (
-      <div className={styles.empty}>No prices recorded for this SKU yet.</div>
+      <div className={styles.empty}>
+        Nenhum preço registrado para este SKU ainda.
+      </div>
     );
   }
 
@@ -111,29 +113,29 @@ export const HistoryChart: FC<HistoryChartProps> = ({
 
   return (
     <div className={styles.HistoryChart}>
-      <section className={styles.card} aria-label="Price over time">
+      <section className={styles.card} aria-label="Preço ao longo do tempo">
         <div className={styles.cardTop}>
           <div>
-            <h2>Price over time</h2>
+            <h2>Preço ao longo do tempo</h2>
             <p>
-              Last price of each day · highlighted stores in colour, the rest in
-              grey
+              Último preço de cada dia · lojas em destaque em cor, as demais em
+              cinza
             </p>
           </div>
-          <div className={styles.views} role="group" aria-label="View">
+          <div className={styles.views} role="group" aria-label="Visualização">
             <button
               type="button"
               aria-pressed={view === 'chart'}
               onClick={() => setView('chart')}
             >
-              Chart
+              Gráfico
             </button>
             <button
               type="button"
               aria-pressed={view === 'table'}
               onClick={() => setView('table')}
             >
-              Table
+              Tabela
             </button>
           </div>
         </div>
@@ -222,10 +224,10 @@ export const HistoryChart: FC<HistoryChartProps> = ({
           </div>
         ) : (
           <div className={styles.tableWrap}>
-            <table aria-label="Price history table">
+            <table aria-label="Tabela do histórico de preços">
               <thead>
                 <tr>
-                  <th>Date</th>
+                  <th>Data</th>
                   {stores.map((s) => (
                     <th key={s.store} className={styles.num}>
                       {s.store}
@@ -254,12 +256,12 @@ export const HistoryChart: FC<HistoryChartProps> = ({
         )}
       </section>
 
-      <section className={styles.card} aria-label="Stores">
+      <section className={styles.card} aria-label="Lojas">
         <div className={styles.cardTop}>
           <div>
-            <h2>Stores</h2>
+            <h2>Lojas</h2>
             <p>
-              Prices in R$ · cheapest first · click to highlight (up to{' '}
+              Preços em R$ · mais barata primeiro · clique para destacar (até{' '}
               {MAX_HIGHLIGHTED})
             </p>
           </div>
@@ -267,14 +269,14 @@ export const HistoryChart: FC<HistoryChartProps> = ({
         <div className={styles.headRow} aria-hidden="true">
           <div className={styles.storeHead}>
             <span />
-            <span>Store</span>
-            <span className={styles.num}>Latest</span>
-            <span className={styles.num}>Lowest</span>
-            <span className={styles.num}>Highest</span>
+            <span>Loja</span>
+            <span className={styles.num}>Atual</span>
+            <span className={styles.num}>Menor</span>
+            <span className={styles.num}>Maior</span>
           </div>
           <span className={styles.open} />
         </div>
-        <ul className={styles.stores} aria-label="Price summary">
+        <ul className={styles.stores} aria-label="Resumo de preços">
           {stores.map((s) => {
             const on = s.store in slots;
             return (
@@ -286,7 +288,7 @@ export const HistoryChart: FC<HistoryChartProps> = ({
                   disabled={!on && (full || !onToggle)}
                   title={
                     !on && full
-                      ? `Up to ${MAX_HIGHLIGHTED} stores can be highlighted`
+                      ? `Até ${MAX_HIGHLIGHTED} lojas podem ser destacadas`
                       : undefined
                   }
                   onClick={() => onToggle?.(s.store)}
@@ -308,8 +310,8 @@ export const HistoryChart: FC<HistoryChartProps> = ({
                     href={pageUrl(s.url)!}
                     target="_blank"
                     rel="noreferrer"
-                    aria-label={`Open the product page at ${s.store}`}
-                    title={`Open the product page at ${s.store}`}
+                    aria-label={`Abrir a página do produto em ${s.store}`}
+                    title={`Abrir a página do produto em ${s.store}`}
                   >
                     ↗
                   </a>
@@ -322,7 +324,7 @@ export const HistoryChart: FC<HistoryChartProps> = ({
         </ul>
         {full && (
           <p className={styles.hint}>
-            {MAX_HIGHLIGHTED} stores highlighted. Remove one to pick another.
+            {MAX_HIGHLIGHTED} lojas em destaque. Remova uma para escolher outra.
           </p>
         )}
       </section>

@@ -23,7 +23,7 @@ describe('App (with a fake Domo)', () => {
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(new Date(Date.UTC(2026, 10, 20, 18, 0))); // 3 h after the fixture run
     renderApp();
-    expect(await screen.findByText('Updated 3 h ago')).toBeInTheDocument();
+    expect(await screen.findByText('Atualizado há 3 h')).toBeInTheDocument();
   });
 
   test('a run older than 30 hours is flagged', async () => {
@@ -31,37 +31,38 @@ describe('App (with a fake Domo)', () => {
     vi.setSystemTime(new Date(Date.UTC(2026, 10, 23, 15, 0))); // 3 days later
     renderApp();
     expect(
-      await screen.findByText('No new run for 3 days'),
+      await screen.findByText('Sem nova coleta há 3 dias'),
     ).toBeInTheDocument();
   });
 
   test('loads the latest run and shows the overview', async () => {
     const domo = renderApp();
     expect(
-      await screen.findByText(/Latest run: 2026-11-20 12:03/),
+      await screen.findByText(/Última coleta: 20\/11\/2026 12:03/),
     ).toHaveTextContent('gh-1001-1');
     expect(
-      screen.getByRole('region', { name: 'Price position' }),
+      screen.getByRole('region', { name: 'Posicionamento de preço' }),
     ).toBeInTheDocument();
     expect(domo.queries).toHaveLength(2); // latest run id, then that run's rows
   });
 
   test('matrix tab, then clicking a SKU opens its history', async () => {
     const domo = renderApp();
-    await screen.findByText(/Latest run/);
-    await userEvent.click(screen.getByRole('tab', { name: 'Price matrix' }));
-    await userEvent.click(screen.getByRole('button', { name: /BABY/ }));
-    expect(screen.getByRole('tab', { name: 'Price history' })).toHaveAttribute(
-      'aria-selected',
-      'true',
+    await screen.findByText(/Última coleta/);
+    await userEvent.click(
+      screen.getByRole('tab', { name: 'Matriz de preços' }),
     );
+    await userEvent.click(screen.getByRole('button', { name: /BABY/ }));
+    expect(
+      screen.getByRole('tab', { name: 'Histórico de preços' }),
+    ).toHaveAttribute('aria-selected', 'true');
     const summary = await screen.findByRole(
       'list',
-      { name: 'Price summary' },
+      { name: 'Resumo de preços' },
       { timeout: 5000 }, // the chart is loaded on demand, which is slow when every test file runs at once
     );
     expect(within(summary).getAllByRole('button')).toHaveLength(2);
-    expect(screen.getByRole('region', { name: 'Product' })).toHaveTextContent(
+    expect(screen.getByRole('region', { name: 'Produto' })).toHaveTextContent(
       'EAN 7509546060781',
     );
     expect(
@@ -71,14 +72,16 @@ describe('App (with a fake Domo)', () => {
 
   test('switching SKU in the history tab loads that SKU', async () => {
     const domo = renderApp();
-    await screen.findByText(/Latest run/);
-    await userEvent.click(screen.getByRole('tab', { name: 'Price history' }));
+    await screen.findByText(/Última coleta/);
     await userEvent.click(
-      await screen.findByRole('combobox', { name: 'Find a product' }),
+      screen.getByRole('tab', { name: 'Histórico de preços' }),
+    );
+    await userEvent.click(
+      await screen.findByRole('combobox', { name: 'Buscar produto' }),
     );
     await userEvent.click(screen.getByRole('option', { name: /LUMINOUS/ }));
     expect(
-      await screen.findByText('No prices recorded for this SKU yet.'),
+      await screen.findByText('Nenhum preço registrado para este SKU ainda.'),
     ).toBeInTheDocument();
     expect(
       domo.queries.some((q) => q.where?.[0]?.equals === '7509546651040'),
@@ -88,9 +91,13 @@ describe('App (with a fake Domo)', () => {
   test('a Domo failure shows the error and a retry', async () => {
     renderApp(fakeDomo({ fail: true }));
     expect(
-      await screen.findByText(/Could not load prices: Domo is unreachable/),
+      await screen.findByText(
+        /Não foi possível carregar os preços: Domo is unreachable/,
+      ),
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Tentar novamente' }),
+    ).toBeInTheDocument();
   });
 });
 
@@ -104,59 +111,62 @@ describe('App with product segmentation', () => {
 
   test('a filter narrows every tab, and clearing restores it', async () => {
     renderWithSegments();
-    const bar = await screen.findByRole('region', { name: 'Product filters' });
-    expect(bar).toHaveTextContent('2 of 2 products');
+    const bar = await screen.findByRole('region', {
+      name: 'Filtros de produto',
+    });
+    expect(bar).toHaveTextContent('2 de 2 produtos');
     await userEvent.click(
-      within(bar).getByRole('button', { name: /^Segment:/ }),
+      within(bar).getByRole('button', { name: /^Segmento:/ }),
     );
     await userEvent.click(within(bar).getByRole('option', { name: /Kids/ }));
-    expect(bar).toHaveTextContent('1 of 2 products');
+    expect(bar).toHaveTextContent('1 de 2 produtos');
     expect(
-      screen.getByRole('group', { name: 'SKUs × stores' }),
+      screen.getByRole('group', { name: 'SKUs × lojas' }),
     ).toHaveTextContent('1 × 4');
 
-    await userEvent.click(screen.getByRole('tab', { name: 'Products' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Produtos' }));
     const cards = within(
-      screen.getByRole('list', { name: 'Products' }),
+      screen.getByRole('list', { name: 'Produtos' }),
     ).getAllByRole('button');
     expect(cards).toHaveLength(1);
     expect(cards[0]).toHaveTextContent('BABY');
     expect(cards[0]).toHaveTextContent('Kids');
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Clear filters' }),
+      screen.getByRole('button', { name: 'Limpar filtros' }),
     );
-    expect(bar).toHaveTextContent('2 of 2 products');
+    expect(bar).toHaveTextContent('2 de 2 produtos');
   });
 
   test('options of the other fields follow the filter, with counts', async () => {
     renderWithSegments();
-    const bar = await screen.findByRole('region', { name: 'Product filters' });
+    const bar = await screen.findByRole('region', {
+      name: 'Filtros de produto',
+    });
     await userEvent.click(
-      within(bar).getByRole('button', { name: /^Segment:/ }),
+      within(bar).getByRole('button', { name: /^Segmento:/ }),
     );
     await userEvent.click(
       within(bar).getByRole('option', { name: /Whitening/ }),
     );
     await userEvent.click(
-      within(bar).getByRole('button', { name: /^Sub-brand:/ }),
+      within(bar).getByRole('button', { name: /^Submarca:/ }),
     );
     expect(
       within(bar)
         .getAllByRole('option')
         .map((o) => o.textContent),
-    ).toEqual(['✓All', 'Luminous White1']);
+    ).toEqual(['✓Todos', 'Luminous White1']);
   });
 
   test('a product card opens that product’s history', async () => {
     renderWithSegments();
-    await screen.findByRole('region', { name: 'Product filters' });
-    await userEvent.click(screen.getByRole('tab', { name: 'Products' }));
+    await screen.findByRole('region', { name: 'Filtros de produto' });
+    await userEvent.click(screen.getByRole('tab', { name: 'Produtos' }));
     await userEvent.click(screen.getByRole('button', { name: /BABY/ }));
-    expect(screen.getByRole('tab', { name: 'Price history' })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
+    expect(
+      screen.getByRole('tab', { name: 'Histórico de preços' }),
+    ).toHaveAttribute('aria-selected', 'true');
   });
 
   test('without segmentation the app works and shows no filter bar', async () => {
@@ -165,11 +175,11 @@ describe('App with product segmentation', () => {
         <App />
       </Provider>,
     );
-    await screen.findByText(/Latest run/);
+    await screen.findByText(/Última coleta/);
     expect(
-      screen.queryByRole('region', { name: 'Product filters' }),
+      screen.queryByRole('region', { name: 'Filtros de produto' }),
     ).not.toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: 'Products' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Produtos' })).toBeInTheDocument();
   });
 });
 
@@ -184,10 +194,10 @@ describe('App when the segmentation fails to load', () => {
       </Provider>,
     );
     expect(
-      await screen.findByText(/Product filters are unavailable/),
+      await screen.findByText(/Filtros de produto indisponíveis/),
     ).toHaveTextContent('HTTP 400');
     expect(
-      screen.getByRole('region', { name: 'Price position' }),
+      screen.getByRole('region', { name: 'Posicionamento de preço' }),
     ).toBeInTheDocument();
   });
 });

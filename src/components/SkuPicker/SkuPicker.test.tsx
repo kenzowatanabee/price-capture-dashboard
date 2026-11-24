@@ -17,7 +17,7 @@ const setup = () => {
   );
   return {
     onSelect,
-    input: screen.getByRole('combobox', { name: 'Find a product' }),
+    input: screen.getByRole('combobox', { name: 'Buscar produto' }),
   };
 };
 
@@ -52,8 +52,8 @@ describe('SkuPicker', () => {
     const { input } = setup();
     await userEvent.click(input);
     const current = screen.getByRole('option', { selected: true });
-    expect(within(current).getByText('Showing')).toBeInTheDocument();
+    expect(within(current).getByText('Em exibição')).toBeInTheDocument();
     await userEvent.type(input, 'zzz');
-    expect(screen.getByText(/No product matches/)).toBeInTheDocument();
+    expect(screen.getByText(/Nenhum produto corresponde/)).toBeInTheDocument();
   });
 });

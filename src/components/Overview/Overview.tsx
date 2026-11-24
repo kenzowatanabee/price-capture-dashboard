@@ -3,7 +3,7 @@ import { RankedBars } from 'components/charts/RankedBars';
 import { Card, StatTile } from 'components/charts/StatTile';
 import { StatusTag } from 'components/charts/StatusTag';
 import { type FC } from 'react';
-import { formatPct, formatPremium } from 'utils/format';
+import { formatPct, formatPremium, plural } from 'utils/format';
 import {
   codeLabel,
   type Overview as OverviewData,
@@ -25,40 +25,44 @@ export const Overview: FC<OverviewProps> = ({ overview: o, comparison }) => {
     <div className={styles.Overview}>
       <div className={styles.kpis}>
         <StatTile
-          label="Prices found"
+          label="Preços encontrados"
           value={formatPct(ratio(o.priced, o.checked))}
-          detail={`${o.priced} of ${o.checked} store × SKU checks`}
+          detail={`${o.priced} de ${o.checked} verificações loja × SKU`}
         />
         <StatTile
-          label="Purchasable"
+          label="Disponível para compra"
           value={formatPct(ratio(o.purchasable, o.availabilityChecked))}
           detail={
             notPurchasable > 0 ? (
               <StatusTag
                 kind="warning"
-                label={`${notPurchasable} listed but not purchasable`}
+                label={plural(
+                  notPurchasable,
+                  'listado, mas indisponível para compra',
+                  'listados, mas indisponíveis para compra',
+                )}
               />
             ) : (
-              `${o.purchasable} of ${o.availabilityChecked} cart checks`
+              `${o.purchasable} de ${o.availabilityChecked} verificações de carrinho`
             )
           }
         />
         <StatTile
-          label="SKUs × stores"
+          label="SKUs × lojas"
           value={`${o.skus} × ${o.stores.length}`}
-          detail="in the latest run"
+          detail="na última coleta"
         />
         <StatTile
-          label="Errors"
+          label="Erros"
           value={String(o.errors)}
           detail={
             o.errors ? (
               <StatusTag
                 kind="critical"
-                label="blocked, timeouts or parse failures"
+                label="bloqueios, tempo esgotado ou falhas de leitura"
               />
             ) : (
-              <StatusTag kind="good" label="every store answered" />
+              <StatusTag kind="good" label="todas as lojas responderam" />
             )
           }
         />
@@ -66,11 +70,11 @@ export const Overview: FC<OverviewProps> = ({ overview: o, comparison }) => {
 
       <div className={styles.cards}>
         <Card
-          title="Price position"
-          subtitle="Average premium over the cheapest purchasable offer of the same SKU · shorter is cheaper"
+          title="Posicionamento de preço"
+          subtitle="Diferença média em relação à menor oferta disponível do mesmo SKU · quanto menor a barra, mais barata"
         >
           <RankedBars
-            label="Average premium over the cheapest offer, per store"
+            label="Diferença média em relação à menor oferta, por loja"
             items={comparison.map((s) => ({
               key: s.store,
               label: s.store,
@@ -78,18 +82,18 @@ export const Overview: FC<OverviewProps> = ({ overview: o, comparison }) => {
               valueText:
                 s.avgPremium == null ? '—' : formatPremium(s.avgPremium),
               detail: s.compared
-                ? `Cheapest on ${s.wins} of ${s.compared} SKUs · ${formatPct(s.promoShare)} on promotion`
-                : 'No SKU it shares with another store',
+                ? `Mais barata em ${s.wins} de ${s.compared} SKUs · ${formatPct(s.promoShare)} em promoção`
+                : 'Nenhum SKU em comum com outra loja',
             }))}
           />
         </Card>
 
         <Card
-          title="Coverage"
-          subtitle="SKUs with a price in the latest run, per store"
+          title="Cobertura"
+          subtitle="SKUs com preço na última coleta, por loja"
         >
           <MeterList
-            label="Prices found per store"
+            label="Preços encontrados por loja"
             items={o.stores.map((s) => {
               const blocked = s.availabilityChecked - s.purchasable;
               const reasons = s.topCodes
@@ -109,18 +113,26 @@ export const Overview: FC<OverviewProps> = ({ overview: o, comparison }) => {
                       {s.errors > 0 && (
                         <StatusTag
                           kind="critical"
-                          label={`${s.errors} errors`}
+                          label={plural(s.errors, 'erro', 'erros')}
                         />
                       )}
                       {blocked > 0 && (
                         <StatusTag
                           kind="warning"
-                          label={`${blocked} not purchasable`}
+                          label={plural(
+                            blocked,
+                            'indisponível para compra',
+                            'indisponíveis para compra',
+                          )}
                         />
                       )}
                       {s.partner > 0 && (
                         <span className={styles.reasons}>
-                          {s.partner} sold by partners
+                          {plural(
+                            s.partner,
+                            'vendido por parceiro',
+                            'vendidos por parceiros',
+                          )}
                         </span>
                       )}
                       {reasons && (

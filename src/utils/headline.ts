@@ -16,8 +16,8 @@ export const overviewHeadline = (
   const ranked = comparison.filter((s) => s.avgPremium != null);
   if (!ranked.length) {
     return {
-      title: 'Store prices, side by side.',
-      lede: `${skuCount(skus)} in the latest run. No SKU has a purchasable price at two stores yet, so there is nothing to compare.`,
+      title: 'Preços das lojas, lado a lado.',
+      lede: `${skuCount(skus)} na última coleta. Nenhum SKU tem preço disponível em duas lojas ainda, então não há o que comparar.`,
     };
   }
   const [first] = ranked;
@@ -26,16 +26,16 @@ export const overviewHeadline = (
     return {
       title:
         leaders.length === 2
-          ? `${leaders[0].store} and ${leaders[1].store} are tied as the cheapest stores.`
-          : `${leaders.length} stores are tied as the cheapest.`,
-      lede: `Each is ${formatPct(first.avgPremium, 1)} above the lowest purchasable offer on average.`,
+          ? `${leaders[0].store} e ${leaders[1].store} estão empatadas como as lojas mais baratas.`
+          : `${leaders.length} lojas estão empatadas como as mais baratas.`,
+      lede: `Cada uma está, em média, ${formatPct(first.avgPremium, 1)} acima da menor oferta disponível.`,
     };
   }
   return {
-    title: `${first.store} is the cheapest store right now.`,
+    title: `${first.store} é a loja mais barata no momento.`,
     lede:
       first.avgPremium === 0
-        ? `It has the lowest purchasable price on all ${skuCount(first.compared)} it shares with another store.`
-        : `On average its prices are ${formatPct(first.avgPremium, 1)} above the lowest purchasable offer, and it is the cheapest on ${first.wins} of the ${skuCount(first.compared)} it shares with another store.`,
+        ? `Tem o menor preço disponível em todos os ${skuCount(first.compared)} que compartilha com outra loja.`
+        : `Em média, seus preços estão ${formatPct(first.avgPremium, 1)} acima da menor oferta disponível, e é a mais barata em ${first.wins} dos ${skuCount(first.compared)} que compartilha com outra loja.`,
   };
 };

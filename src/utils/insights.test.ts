@@ -7,6 +7,7 @@ import {
   formatBRL,
   formatPct,
   formatPremium,
+  formatRunTime,
   hoursSince,
 } from './format';
 import {
@@ -204,9 +205,9 @@ describe('store comparison', () => {
 
 describe('premium and freshness formatting', () => {
   test('premium', () => {
-    expect(formatPremium(0.0423)).toBe('+4.2%');
+    expect(formatPremium(0.0423)).toBe('+4,2%');
     expect(formatPremium(0)).toBe('0%');
-    expect(formatPremium(-0.1)).toBe('−10.0%');
+    expect(formatPremium(-0.1)).toBe('−10,0%');
     expect(formatPremium(null)).toBe('—');
   });
 
@@ -218,9 +219,9 @@ describe('premium and freshness formatting', () => {
   });
 
   test('age', () => {
-    expect(formatAge(0.2)).toBe('12 min ago');
-    expect(formatAge(3.4)).toBe('3 h ago');
-    expect(formatAge(50)).toBe('2 days ago');
+    expect(formatAge(0.2)).toBe('12 min');
+    expect(formatAge(3.4)).toBe('3 h');
+    expect(formatAge(50)).toBe('2 dias');
   });
 });
 
@@ -248,12 +249,12 @@ describe('matrix cell helpers', () => {
   });
 
   test('plain-language reasons', () => {
-    expect(reasonLabel(priceRow({ code: 'NOT_LISTED' }))).toBe('Not listed');
+    expect(reasonLabel(priceRow({ code: 'NOT_LISTED' }))).toBe('Não listado');
     expect(reasonLabel(priceRow({ code: 'WHATEVER', status: 'Error' }))).toBe(
-      'Error',
+      'Erro',
     );
     expect(reasonLabel(priceRow({ code: null, status: 'Not Found' }))).toBe(
-      'No price',
+      'Sem preço',
     );
   });
 });
@@ -321,5 +322,13 @@ describe('main rows', () => {
     ];
     expect(mainRows(rows)).toHaveLength(1);
     expect(buildMatrix(mainRows(rows)).rows[0].cells.A?.price).toBe(20);
+  });
+});
+
+describe('Brazilian formats', () => {
+  test('run time as dd/mm/yyyy hh:mm, percentages with a decimal comma', () => {
+    expect(formatRunTime('2026-11-20 12:03:12')).toBe('20/11/2026 12:03');
+    expect(formatRunTime('')).toBe('—');
+    expect(formatPct(0.0717, 1)).toBe('7,2%');
   });
 });

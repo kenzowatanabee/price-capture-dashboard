@@ -57,38 +57,44 @@ export const ProductGrid: FC<ProductGridProps> = ({
       <div className={styles.controls}>
         <input
           type="search"
-          aria-label="Search products"
-          placeholder="Search by name or EAN, e.g. total 90g"
+          aria-label="Buscar produtos"
+          placeholder="Buscar por nome ou EAN, ex.: total 90g"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <div className={styles.sort}>
           <Dropdown
-            label="Sort products"
+            label="Ordenar produtos"
             value={sort}
             onChange={(next) => setSort(next as ProductSort)}
             options={[
-              { value: 'name', label: 'Sort: by name' },
-              { value: 'price', label: 'Sort: lowest price first' },
-              { value: 'gap', label: 'Sort: biggest gap between stores first' },
-              { value: 'stores', label: 'Sort: sold at fewest stores first' },
+              { value: 'name', label: 'Ordenar: por nome' },
+              { value: 'price', label: 'Ordenar: menor preço primeiro' },
+              {
+                value: 'gap',
+                label: 'Ordenar: maior diferença entre lojas primeiro',
+              },
+              {
+                value: 'stores',
+                label: 'Ordenar: vendido em menos lojas primeiro',
+              },
             ]}
           />
         </div>
         <span className={styles.count}>
-          {rows.length} of {matrix.rows.length} products
+          {rows.length} de {matrix.rows.length} produtos
         </span>
       </div>
 
       {!rows.length && (
         <p className={styles.none}>
           {search.trim()
-            ? `No product matches “${search.trim()}”.`
-            : 'No product matches the filters.'}
+            ? `Nenhum produto corresponde a “${search.trim()}”.`
+            : 'Nenhum produto corresponde aos filtros.'}
         </p>
       )}
 
-      <ul className={styles.grid} aria-label="Products">
+      <ul className={styles.grid} aria-label="Produtos">
         {rows.map((r) => {
           const product = byEan[r.ean];
           const stores = buyableAt(r);
@@ -118,20 +124,20 @@ export const ProductGrid: FC<ProductGridProps> = ({
                   <span className={styles.facts}>
                     {r.min != null ? (
                       <span>
-                        <strong>{formatBRL(r.min)}</strong> at {r.cheapest[0]}
+                        <strong>{formatBRL(r.min)}</strong> em {r.cheapest[0]}
                         {r.cheapest.length > 1
                           ? ` +${r.cheapest.length - 1}`
                           : ''}
                       </span>
                     ) : (
-                      <span>No purchasable price</span>
+                      <span>Sem preço disponível</span>
                     )}
                     <span>
-                      {stores} of {storeCount} stores
+                      {stores} de {storeCount} lojas
                     </span>
                     {r.spread != null && r.spread > 0 && (
-                      <span title="The most expensive store's price compared with the lowest">
-                        highest price {formatPremium(r.spread)}
+                      <span title="Preço da loja mais cara em relação ao menor">
+                        maior preço {formatPremium(r.spread)}
                       </span>
                     )}
                   </span>

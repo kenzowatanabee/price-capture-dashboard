@@ -14,7 +14,7 @@ describe('HistoryChart', () => {
   test('store list: cheapest first, with latest, lowest and highest', () => {
     render(<HistoryChart series={series} slots={initialSlots(['Drogasil'])} />);
     const rows = within(
-      screen.getByRole('list', { name: 'Price summary' }),
+      screen.getByRole('list', { name: 'Resumo de preços' }),
     ).getAllByRole('button');
     const cells = (i: number) =>
       [...rows[i].querySelectorAll('span')].map((s) =>
@@ -56,29 +56,31 @@ describe('HistoryChart', () => {
       screen.getByRole('button', { name: /Drogaria Venancio/ }),
     ).toBeDisabled();
     expect(screen.getByRole('button', { name: /^.*Drogasil/ })).toBeEnabled(); // can still be removed
-    expect(screen.getByText(/Remove one to pick another/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Remova uma para escolher outra/),
+    ).toBeInTheDocument();
   });
 
   test('table view lists every day, newest first', async () => {
     render(<HistoryChart series={series} slots={{}} />);
-    await userEvent.click(screen.getByRole('button', { name: 'Table' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Tabela' }));
     const rows = within(
-      screen.getByRole('table', { name: 'Price history table' }),
+      screen.getByRole('table', { name: 'Tabela do histórico de preços' }),
     ).getAllByRole('row');
     expect(rows).toHaveLength(1 + 3);
-    expect(rows[1]).toHaveTextContent('20 Nov');
+    expect(rows[1]).toHaveTextContent('20 nov');
     expect(rows[2]).toHaveTextContent('—'); // Venancio had no price on 19 Nov
   });
 
   test('a SKU without any price shows a message instead of an empty chart', () => {
     render(<HistoryChart series={buildHistory([])} slots={{}} />);
     expect(
-      screen.getByText('No prices recorded for this SKU yet.'),
+      screen.getByText('Nenhum preço registrado para este SKU ainda.'),
     ).toBeInTheDocument();
   });
 
   test('short dates', () => {
-    expect(shortDate('2026-11-20')).toBe('20 Nov');
+    expect(shortDate('2026-11-20')).toBe('20 nov');
     expect(shortDate('weird')).toBe('weird');
   });
 });
@@ -87,7 +89,7 @@ describe('HistoryChart store links', () => {
   test('a store with a known page gets a link to it', () => {
     render(<HistoryChart series={series} slots={initialSlots(['Drogasil'])} />);
     const link = screen.getByRole('link', {
-      name: 'Open the product page at Drogasil',
+      name: 'Abrir a página do produto em Drogasil',
     });
     expect(link).toHaveAttribute('href', expect.stringContaining('62451'));
     expect(link).toHaveAttribute('target', '_blank');

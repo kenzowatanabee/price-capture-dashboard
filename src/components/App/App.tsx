@@ -19,7 +19,7 @@ import {
   setTab,
   type Tab,
 } from 'reducers/prices/slice';
-import { formatAge, hoursSince } from 'utils/format';
+import { formatAge, formatRunTime, hoursSince } from 'utils/format';
 import { type Headline, overviewHeadline } from 'utils/headline';
 import {
   buildMatrix,
@@ -35,30 +35,30 @@ import styles from './App.module.scss';
 const STALE_AFTER_HOURS = 30;
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'products', label: 'Products' },
-  { id: 'matrix', label: 'Price matrix' },
-  { id: 'history', label: 'Price history' },
+  { id: 'overview', label: 'Visão geral' },
+  { id: 'products', label: 'Produtos' },
+  { id: 'matrix', label: 'Matriz de preços' },
+  { id: 'history', label: 'Histórico de preços' },
 ];
 
 const TAB_COPY: Record<Exclude<Tab, 'overview'>, Headline> = {
   products: {
-    title: 'Products',
-    lede: 'Every tracked product: what it is, its lowest price and where, and how widely it is sold.',
+    title: 'Produtos',
+    lede: 'Todos os produtos monitorados: o que são, o menor preço e onde, e em quantas lojas são vendidos.',
   },
   matrix: {
-    title: 'Price matrix',
-    lede: 'The latest price of each SKU, and how far each store sits above the lowest purchasable offer.',
+    title: 'Matriz de preços',
+    lede: 'O preço mais recente de cada SKU e quanto cada loja está acima da menor oferta disponível para compra.',
   },
   history: {
-    title: 'Price history',
-    lede: 'One line per store, using the last price captured each day.',
+    title: 'Histórico de preços',
+    lede: 'Uma linha por loja, com o último preço coletado em cada dia.',
   },
 };
 
 const FALLBACK: Headline = {
-  title: 'Store prices, side by side.',
-  lede: 'Daily prices of the tracked SKUs across Brazilian pharmacy chains.',
+  title: 'Preços das lojas, lado a lado.',
+  lede: 'Preços diários dos SKUs monitorados nas redes de farmácias brasileiras.',
 };
 
 const Logo: FC = () => (
@@ -127,29 +127,31 @@ export const App: FC = () => {
 
   let content;
   if (latest.status === 'idle' || latest.status === 'loading') {
-    content = <div className={styles.status}>Loading the latest run…</div>;
+    content = <div className={styles.status}>Carregando a última coleta…</div>;
   } else if (latest.status === 'error') {
     content = (
       <div className={`${styles.status} ${styles.error}`}>
-        Could not load prices: {latest.error}
+        Não foi possível carregar os preços: {latest.error}
         <button
           type="button"
           className={styles.retry}
           onClick={() => void dispatch(loadLatestRun())}
         >
-          Retry
+          Tentar novamente
         </button>
       </div>
     );
   } else if (!latest.rows.length) {
     content = (
       <div className={styles.status}>
-        No scraper run with a run id found in the dataset yet.
+        Nenhuma coleta encontrada na base de dados ainda.
       </div>
     );
   } else if (!rows.length) {
     content = (
-      <div className={styles.status}>No product matches the filters.</div>
+      <div className={styles.status}>
+        Nenhum produto corresponde aos filtros.
+      </div>
     );
   } else if (tab === 'overview') {
     content = <Overview overview={overview} comparison={comparison} />;
@@ -204,7 +206,7 @@ export const App: FC = () => {
           {ready && (
             <div className={styles.run}>
               <span>
-                Latest run: {run.fetchedAtBrt.slice(0, 16) || '—'} (Brasília) ·{' '}
+                Última coleta: {formatRunTime(run.fetchedAtBrt)} (Brasília) ·{' '}
                 {latest.runId}
               </span>
               {age != null && (
@@ -212,12 +214,12 @@ export const App: FC = () => {
                   {age > STALE_AFTER_HOURS ? (
                     <StatusTag
                       kind="warning"
-                      label={`No new run for ${formatAge(age).replace(' ago', '')}`}
+                      label={`Sem nova coleta há ${formatAge(age)}`}
                     />
                   ) : (
                     <StatusTag
                       kind="good"
-                      label={`Updated ${formatAge(age)}`}
+                      label={`Atualizado há ${formatAge(age)}`}
                     />
                   )}
                 </span>
@@ -245,8 +247,8 @@ export const App: FC = () => {
         )}
         {ready && segments.status === 'error' && (
           <p className={styles.notice} role="status">
-            Product filters are unavailable: the segmentation could not be
-            loaded ({segments.error}).
+            Filtros de produto indisponíveis: não foi possível carregar a
+            segmentação ({segments.error}).
           </p>
         )}
         {content}
@@ -254,7 +256,7 @@ export const App: FC = () => {
 
       <footer className={styles.footer}>
         <span>Price Capture</span>
-        <span>Source: PRICE_TRACKER dataset in Domo · prices in BRL</span>
+        <span>Fonte: base PRICE_TRACKER no Domo · preços em R$</span>
       </footer>
     </div>
   );

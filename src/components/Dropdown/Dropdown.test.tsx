@@ -93,7 +93,7 @@ describe('Dropdown with a long list', () => {
     await userEvent.click(screen.getByRole('button', { name: /^Brand:/ }));
     return {
       onChange,
-      search: screen.getByRole('textbox', { name: 'Search Brand' }),
+      search: screen.getByRole('textbox', { name: 'Buscar Brand' }),
     };
   };
 
@@ -117,7 +117,7 @@ describe('Dropdown with a long list', () => {
   test('says so when nothing matches, and Escape closes', async () => {
     const { search } = await open();
     await userEvent.type(search, 'zzz');
-    expect(screen.getByText(/Nothing matches/)).toBeInTheDocument();
+    expect(screen.getByText(/Nenhum resultado/)).toBeInTheDocument();
     await userEvent.keyboard('{Escape}');
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });

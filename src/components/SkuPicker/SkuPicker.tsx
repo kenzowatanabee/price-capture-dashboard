@@ -55,14 +55,14 @@ export const SkuPicker: FC<SkuPickerProps> = ({ skus, selected, onSelect }) => {
       <input
         type="text"
         role="combobox"
-        aria-label="Find a product"
+        aria-label="Buscar produto"
         aria-expanded={open}
         aria-controls={listId}
         aria-autocomplete="list"
         aria-activedescendant={
           open && shown[active] ? `${listId}-${shown[active].ean}` : undefined
         }
-        placeholder="Find a product by name or EAN"
+        placeholder="Buscar produto por nome ou EAN"
         autoComplete="off"
         value={query}
         onChange={(e) => {
@@ -94,13 +94,13 @@ export const SkuPicker: FC<SkuPickerProps> = ({ skus, selected, onSelect }) => {
                 <span className={styles.ean}>{s.ean}</span>
               </span>
               {s.ean === selected && (
-                <span className={styles.current}>Showing</span>
+                <span className={styles.current}>Em exibição</span>
               )}
             </li>
           ))}
           {!shown.length && (
             <li className={styles.none} role="presentation">
-              No product matches “{query.trim()}”.
+              Nenhum produto corresponde a “{query.trim()}”.
             </li>
           )}
         </ul>

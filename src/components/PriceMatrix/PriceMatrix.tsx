@@ -34,7 +34,8 @@ const LEGEND_STEPS = [
 const tooltip = (row: PriceRow) =>
   [
     row.foundName,
-    isPartner(row) && `Sold by a partner: ${row.seller || 'unnamed seller'}`,
+    isPartner(row) &&
+      `Vendido por parceiro: ${row.seller || 'vendedor sem nome'}`,
     row.message,
   ]
     .filter(Boolean)
@@ -53,7 +54,7 @@ const StoreLink: FC<{ row: PriceRow; children: ReactNode }> = ({
       href={href}
       target="_blank"
       rel="noreferrer"
-      aria-label={`${row.store}: ${typeof children === 'string' ? children : ''} (opens the store page)`}
+      aria-label={`${row.store}: ${typeof children === 'string' ? children : ''} (abre a página da loja)`}
     >
       {children}
     </a>
@@ -70,7 +71,7 @@ const Cell: FC<{ row: PriceRow | undefined; min: number | null }> = ({
   if (isPartner(row)) {
     return (
       <td className={`${styles.cell} ${styles.missing}`} title={tooltip(row)}>
-        <StoreLink row={row}>Partner only</StoreLink>
+        <StoreLink row={row}>Só parceiro</StoreLink>
       </td>
     );
   }
@@ -94,7 +95,10 @@ const Cell: FC<{ row: PriceRow | undefined; min: number | null }> = ({
     <td className={classes} title={tooltip(row)} data-step={step ?? undefined}>
       <div>
         {blocked && (
-          <span className={styles.warnIcon} aria-label="not purchasable">
+          <span
+            className={styles.warnIcon}
+            aria-label="indisponível para compra"
+          >
             !
           </span>
         )}
@@ -105,9 +109,9 @@ const Cell: FC<{ row: PriceRow | undefined; min: number | null }> = ({
       </div>
       <div className={styles.sub}>
         {blocked
-          ? 'not purchasable'
+          ? 'indisponível'
           : step === 0
-            ? '▼ Lowest'
+            ? '▼ Menor'
             : premium != null
               ? formatPremium(premium)
               : ''}
@@ -164,19 +168,22 @@ export const PriceMatrix: FC<PriceMatrixProps> = ({
         <div className={styles.controls}>
           <input
             type="search"
-            aria-label="Search SKU"
-            placeholder="Search by name or EAN, e.g. total 90g"
+            aria-label="Buscar SKU"
+            placeholder="Buscar por nome ou EAN, ex.: total 90g"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
           <div className={styles.sort}>
             <Dropdown
-              label="Sort SKUs"
+              label="Ordenar SKUs"
               value={sort}
               onChange={(next) => setSort(next as MatrixSort)}
               options={[
-                { value: 'name', label: 'Sort: by name' },
-                { value: 'spread', label: 'Sort: biggest price gap first' },
+                { value: 'name', label: 'Ordenar: por nome' },
+                {
+                  value: 'spread',
+                  label: 'Ordenar: maior diferença de preço primeiro',
+                },
               ]}
             />
           </div>
@@ -186,16 +193,16 @@ export const PriceMatrix: FC<PriceMatrixProps> = ({
               checked={onlyPriced}
               onChange={(e) => setOnlyPriced(e.target.checked)}
             />
-            Hide SKUs without any price
+            Ocultar SKUs sem preço
           </label>
           <span className={styles.count}>
-            {rows.length} of {matrix.rows.length} SKUs
+            {rows.length} de {matrix.rows.length} SKUs
           </span>
           <ExportButton rows={exportRows} filename={exportName} />
         </div>
 
         <div className={styles.scroll}>
-          <table aria-label="Price matrix">
+          <table aria-label="Matriz de preços">
             <colgroup>
               <col className={styles.colSku} />
               {stores.map((store) => (
@@ -213,9 +220,9 @@ export const PriceMatrix: FC<PriceMatrixProps> = ({
                 ))}
                 <th
                   className={styles.num}
-                  title="Highest purchasable price vs the lowest"
+                  title="Maior preço disponível em relação ao menor"
                 >
-                  Price gap
+                  Diferença
                 </th>
               </tr>
             </thead>
@@ -224,8 +231,8 @@ export const PriceMatrix: FC<PriceMatrixProps> = ({
                 <tr>
                   <td className={styles.none} colSpan={stores.length + 2}>
                     {search.trim()
-                      ? `No SKU matches “${search.trim()}”.`
-                      : 'No SKU has a price in the latest run.'}
+                      ? `Nenhum SKU corresponde a “${search.trim()}”.`
+                      : 'Nenhum SKU tem preço na última coleta.'}
                   </td>
                 </tr>
               )}
@@ -276,9 +283,9 @@ export const PriceMatrix: FC<PriceMatrixProps> = ({
         <div className={styles.legend}>
           <span
             className={styles.scale}
-            aria-label="Premium over the lowest purchasable price"
+            aria-label="Diferença em relação ao menor preço disponível"
           >
-            Prices in R$ · % above the lowest:
+            Preços em R$ · % acima do menor:
             {LEGEND_STEPS.map(([cls, text]) => (
               <span key={text} className={styles.scaleStep}>
                 <span className={`${styles.swatch} ${cls}`} />
@@ -287,16 +294,16 @@ export const PriceMatrix: FC<PriceMatrixProps> = ({
             ))}
           </span>
           <span>
-            <span className={styles.promo}>−7%</span> discount vs the
-            store&apos;s own list price
+            <span className={styles.promo}>−7%</span> de desconto sobre o preço
+            de tabela da própria loja
           </span>
           <span>
-            <span className={styles.warnIcon}>!</span>listed but not purchasable
-            (excluded from lowest and gap)
+            <span className={styles.warnIcon}>!</span>listado, mas indisponível
+            para compra (fora do menor preço e da diferença)
           </span>
           <span>
-            Click a price to open that store&apos;s product page · hover a cell
-            for the store&apos;s product name
+            Clique em um preço para abrir a página do produto na loja · passe o
+            mouse sobre a célula para ver o nome do produto na loja
           </span>
         </div>
       </div>

@@ -35,7 +35,7 @@ export const FilterBar: FC<FilterBarProps> = ({
 }) => {
   const active = activeFilters(filters).length;
   return (
-    <section className={styles.FilterBar} aria-label="Product filters">
+    <section className={styles.FilterBar} aria-label="Filtros de produto">
       <div className={styles.fields}>
         {SEGMENT_FIELDS.map((field, index) => {
           const options = filterOptions(eans, byEan, filters, field.key);
@@ -51,7 +51,7 @@ export const FilterBar: FC<FilterBarProps> = ({
               disabled={!options.length && !value}
               onChange={(next) => onChange(field.key, next)}
               options={[
-                { value: '', label: 'All' },
+                { value: '', label: 'Todos' },
                 // keep a picked value in the list even if other filters now exclude it
                 ...(value && !options.some((o) => o.value === value)
                   ? [{ value, label: value, count: 0 }]
@@ -68,10 +68,10 @@ export const FilterBar: FC<FilterBarProps> = ({
       </div>
       <div className={styles.summary}>
         <span aria-live="polite">
-          {shown} of {eans.length} products
+          {shown} de {eans.length} produtos
         </span>
         <button type="button" disabled={!active} onClick={onClear}>
-          Clear filters
+          Limpar filtros
         </button>
       </div>
     </section>

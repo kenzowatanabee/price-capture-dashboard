@@ -75,34 +75,34 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
   useEffect(() => setSlots(defaultSlots(series)), [series]);
 
   if (!skus.length) {
-    return <div className={styles.status}>No SKUs in the latest run.</div>;
+    return <div className={styles.status}>Nenhum SKU na última coleta.</div>;
   }
 
   return (
     <div className={styles.PriceHistory}>
-      <section className={styles.product} aria-label="Product">
+      <section className={styles.product} aria-label="Produto">
         <ProductThumb src={product?.imageUrl} size={88} zoom />
         <div className={styles.info}>
-          <h2>{product?.descSku ?? 'Unknown product'}</h2>
+          <h2>{product?.descSku ?? 'Produto desconhecido'}</h2>
           <p className={styles.ean}>EAN {selected}</p>
           {product && (
             <p className={styles.facts}>
               {product.min != null ? (
                 <>
-                  Lowest in the latest run:{' '}
-                  <strong>{formatBRL(product.min)}</strong> at{' '}
+                  Menor preço na última coleta:{' '}
+                  <strong>{formatBRL(product.min)}</strong> em{' '}
                   {product.cheapest.join(', ')}
                 </>
               ) : (
-                'No purchasable price in the latest run'
+                'Sem preço disponível para compra na última coleta'
               )}
               <span>
-                Sold and purchasable at {buyable.length} of {offers.length}{' '}
-                stores
+                Vendido e disponível em {buyable.length} de {offers.length}{' '}
+                lojas
               </span>
               {link && /^https?:\/\//i.test(link) && (
                 <a href={link} target="_blank" rel="noreferrer">
-                  Open at {lowestStore} ↗
+                  Abrir em {lowestStore} ↗
                 </a>
               )}
             </p>
@@ -117,22 +117,22 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
           <ExportButton
             rows={history.status === 'ready' ? history.rows : []}
             filename={`price-history-${selected}`}
-            label="Export this product's history"
+            label="Exportar histórico deste produto"
           />
         </div>
       </section>
 
       {history.status === 'loading' && (
-        <div className={styles.status}>Loading history…</div>
+        <div className={styles.status}>Carregando histórico…</div>
       )}
       {history.status === 'error' && (
         <div className={`${styles.status} ${styles.error}`}>
-          Could not load the history: {history.error}
+          Não foi possível carregar o histórico: {history.error}
         </div>
       )}
       {history.status === 'ready' && (
         <Suspense
-          fallback={<div className={styles.status}>Loading chart…</div>}
+          fallback={<div className={styles.status}>Carregando gráfico…</div>}
         >
           <HistoryChart
             series={series}

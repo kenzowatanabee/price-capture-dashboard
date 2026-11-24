@@ -16,7 +16,7 @@ export interface ExportButtonProps {
 export const ExportButton: FC<ExportButtonProps> = ({
   rows,
   filename,
-  label = 'Export CSV',
+  label = 'Exportar CSV',
 }) => (
   <button
     type="button"

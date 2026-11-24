@@ -30,7 +30,7 @@ const rows = [
 ];
 
 const bodyRows = () =>
-  within(screen.getByRole('table', { name: 'Sellers in the latest run' }))
+  within(screen.getByRole('table', { name: 'Vendedores na última coleta' }))
     .getAllByRole('row')
     .slice(1);
 
@@ -45,17 +45,17 @@ describe('SellerTable', () => {
   test('names the seller and tags partners', () => {
     render(<SellerTable rows={rows} />);
     const [drogal, drogasil, dsp, pague] = bodyRows();
-    expect(drogal).toHaveTextContent('Yes');
+    expect(drogal).toHaveTextContent('Sim');
     expect(within(drogasil).getAllByRole('cell')[1]).toHaveTextContent(
       'Drogasil', // sold by the store itself, name not repeated in the data
     );
     expect(dsp).toHaveTextContent('Duda Makeup');
-    expect(dsp).toHaveTextContent('Partner');
+    expect(dsp).toHaveTextContent('Parceiro');
     expect(within(dsp).getByRole('link')).toHaveAttribute(
       'href',
       'https://dsp.test/p/1',
     );
-    expect(pague).toHaveTextContent('Not listed');
+    expect(pague).toHaveTextContent('Não listado');
   });
 });
 
@@ -86,6 +86,6 @@ describe('SellerTable with several sellers at one store', () => {
     );
     expect(
       bodyRows().map((r) => within(r).getAllByRole('cell')[1].textContent),
-    ).toEqual(['Droga Raia', 'Viver BemPartner', 'SensePartner']);
+    ).toEqual(['Droga Raia', 'Viver BemParceiro', 'SenseParceiro']);
   });
 });

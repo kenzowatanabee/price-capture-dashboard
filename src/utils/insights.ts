@@ -344,19 +344,19 @@ export const premiumStep = (premium: number | null): number | null => {
 };
 
 const REASONS: Record<string, string> = {
-  NOT_LISTED: 'Not listed',
-  OUT_OF_STOCK: 'Out of stock',
-  NO_PRICE: 'No price',
-  ZERO_PRICE: 'Price 0',
-  NO_STATE: 'Page changed',
-  EAN_MISMATCH: 'Other product',
-  TIMEOUT: 'Timeout',
-  NETWORK: 'Network error',
-  HTTP_ERROR: 'Blocked',
-  BLOCKED: 'Blocked',
-  PARSE_ERROR: 'Unreadable',
-  SKIPPED: 'Store down',
-  CONFIG: 'Config error',
+  NOT_LISTED: 'Não listado',
+  OUT_OF_STOCK: 'Sem estoque',
+  NO_PRICE: 'Sem preço',
+  ZERO_PRICE: 'Preço 0',
+  NO_STATE: 'Página mudou',
+  EAN_MISMATCH: 'Outro produto',
+  TIMEOUT: 'Tempo esgotado',
+  NETWORK: 'Erro de rede',
+  HTTP_ERROR: 'Bloqueado',
+  BLOCKED: 'Bloqueado',
+  PARSE_ERROR: 'Ilegível',
+  SKIPPED: 'Loja fora do ar',
+  CONFIG: 'Erro de configuração',
 };
 
 /** Plain-language name of a reason code; unknown codes pass through. */
@@ -365,4 +365,4 @@ export const codeLabel = (code: string): string => REASONS[code] ?? code;
 /** Short, plain-language reason for a cell without a usable price. */
 export const reasonLabel = (row: PriceRow): string =>
   (row.code && REASONS[row.code]) ||
-  (row.status === 'Error' ? 'Error' : 'No price');
+  (row.status === 'Error' ? 'Erro' : 'Sem preço');

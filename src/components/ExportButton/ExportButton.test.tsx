@@ -14,7 +14,7 @@ describe('ExportButton', () => {
       .spyOn(csv, 'downloadCsv')
       .mockImplementation(() => undefined);
     render(<ExportButton rows={[priceRow()]} filename="price-matrix-run1" />);
-    await userEvent.click(screen.getByRole('button', { name: 'Export CSV' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Exportar CSV' }));
     expect(download).toHaveBeenCalledWith(
       'price-matrix-run1.csv',
       expect.stringContaining('ean;desc_sku;store'),
@@ -23,6 +23,6 @@ describe('ExportButton', () => {
 
   test('disabled when there is nothing to export', () => {
     render(<ExportButton rows={[]} filename="x" />);
-    expect(screen.getByRole('button', { name: 'Export CSV' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Exportar CSV' })).toBeDisabled();
   });
 });
