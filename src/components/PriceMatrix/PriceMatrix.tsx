@@ -5,10 +5,10 @@ import { discount, formatAmount, formatPct, formatPremium } from 'utils/format';
 import {
   cellPremium,
   type Matrix,
-  type MatrixRow,
   premiumStep,
   reasonLabel,
 } from 'utils/insights';
+import { matchesSku } from 'utils/search';
 
 import styles from './PriceMatrix.module.scss';
 
@@ -85,9 +85,6 @@ export interface PriceMatrixProps {
   onSelectSku?: (ean: string) => void;
 }
 
-const matches = (row: MatrixRow, text: string) =>
-  !text || row.descSku.toLowerCase().includes(text) || row.ean.includes(text);
-
 export const PriceMatrix: FC<PriceMatrixProps> = ({
   matrix,
   storeOrder = [],
@@ -103,9 +100,8 @@ export const PriceMatrix: FC<PriceMatrixProps> = ({
   }, [matrix.stores, storeOrder]);
 
   const rows = useMemo(() => {
-    const text = search.trim().toLowerCase();
     const kept = matrix.rows.filter(
-      (r) => matches(r, text) && (!onlyPriced || r.min != null),
+      (r) => matchesSku(r, search) && (!onlyPriced || r.min != null),
     );
     return sort === 'spread'
       ? [...kept].sort((a, b) => (b.spread ?? -1) - (a.spread ?? -1))
@@ -121,7 +117,7 @@ export const PriceMatrix: FC<PriceMatrixProps> = ({
           <input
             type="search"
             aria-label="Search SKU"
-            placeholder="Search by description or EAN"
+            placeholder="Search by name or EAN, e.g. total 90g"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -175,11 +171,20 @@ export const PriceMatrix: FC<PriceMatrixProps> = ({
               </tr>
             </thead>
             <tbody>
+              {!rows.length && (
+                <tr>
+                  <td className={styles.none} colSpan={stores.length + 2}>
+                    {search.trim()
+                      ? `No SKU matches “${search.trim()}”.`
+                      : 'No SKU has a price in the latest run.'}
+                  </td>
+                </tr>
+              )}
               {rows.map((r) => (
                 <tr key={r.ean}>
                   <td className={styles.sku}>
                     <div className={styles.skuBody}>
-                      <ProductThumb src={r.imageUrl} />
+                      <ProductThumb src={r.imageUrl} size={40} zoom />
                       <div>
                         {onSelectSku ? (
                           <button

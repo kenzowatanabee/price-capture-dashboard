@@ -1,10 +1,12 @@
 import { ProductThumb } from 'components/ProductThumb/ProductThumb';
+import { SkuPicker } from 'components/SkuPicker/SkuPicker';
 import { type FC, lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'reducers';
 import { loadHistory, selectHistory } from 'reducers/prices/slice';
 import type { PriceRow } from 'services/prices';
 import { defaultSlots, type SlotMap, toggleHighlight } from 'utils/colors';
-import { buildHistory, skuImage } from 'utils/insights';
+import { formatBRL } from 'utils/format';
+import { buildHistory, buildMatrix } from 'utils/insights';
 
 import styles from './PriceHistory.module.scss';
 
@@ -29,12 +31,8 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
   const dispatch = useAppDispatch();
   const history = useAppSelector(selectHistory);
 
-  const skus = useMemo(() => {
-    const unique = new Map(latestRows.map((r) => [r.ean, r.descSku]));
-    return [...unique.entries()]
-      .map(([ean, descSku]) => ({ ean, descSku }))
-      .sort((a, b) => a.descSku.localeCompare(b.descSku, 'pt-BR'));
-  }, [latestRows]);
+  // one entry per SKU of the latest run, with its picture and its lowest price
+  const skus = useMemo(() => buildMatrix(latestRows).rows, [latestRows]);
 
   const selected = history.ean ?? initialEan ?? skus[0]?.ean ?? null;
 
@@ -44,10 +42,15 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
     }
   }, [dispatch, selected, history.ean]);
 
-  const image = useMemo(
-    () => skuImage(latestRows.filter((r) => r.ean === selected)),
-    [latestRows, selected],
+  const product = skus.find((s) => s.ean === selected);
+  const offers = product
+    ? Object.values(product.cells).filter((r) => r != null)
+    : [];
+  const buyable = offers.filter(
+    (r) => r.price != null && r.available !== false,
   );
+  const lowestStore = product?.cheapest[0];
+  const link = lowestStore ? product.cells[lowestStore]?.url : '';
 
   const series = useMemo(() => buildHistory(history.rows), [history.rows]);
 
@@ -61,21 +64,39 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
 
   return (
     <div className={styles.PriceHistory}>
-      <div className={styles.toolbar}>
-        <ProductThumb src={image} size={40} />
-        <span aria-hidden="true">SKU</span>
-        <select
-          aria-label="SKU"
-          value={selected ?? ''}
-          onChange={(e) => void dispatch(loadHistory(e.target.value))}
-        >
-          {skus.map((s) => (
-            <option key={s.ean} value={s.ean}>
-              {s.descSku} — {s.ean}
-            </option>
-          ))}
-        </select>
-      </div>
+      <section className={styles.product} aria-label="Product">
+        <ProductThumb src={product?.imageUrl} size={88} zoom />
+        <div className={styles.info}>
+          <h2>{product?.descSku ?? 'Unknown product'}</h2>
+          <p className={styles.ean}>EAN {selected}</p>
+          {product && (
+            <p className={styles.facts}>
+              {product.min != null ? (
+                <>
+                  Lowest in the latest run:{' '}
+                  <strong>{formatBRL(product.min)}</strong> at{' '}
+                  {product.cheapest.join(', ')}
+                </>
+              ) : (
+                'No purchasable price in the latest run'
+              )}
+              <span>
+                Purchasable at {buyable.length} of {offers.length} stores
+              </span>
+              {link && /^https?:\/\//i.test(link) && (
+                <a href={link} target="_blank" rel="noreferrer">
+                  Open at {lowestStore} ↗
+                </a>
+              )}
+            </p>
+          )}
+        </div>
+        <SkuPicker
+          skus={skus}
+          selected={selected}
+          onSelect={(ean) => void dispatch(loadHistory(ean))}
+        />
+      </section>
 
       {history.status === 'loading' && (
         <div className={styles.status}>Loading history…</div>

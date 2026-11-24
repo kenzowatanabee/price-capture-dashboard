@@ -27,3 +27,25 @@ describe('ProductThumb', () => {
     expect(container.querySelector('img')).toBeNull();
   });
 });
+
+describe('ProductThumb zoom', () => {
+  test('a large preview shows while the pointer is over the picture', () => {
+    const { container, queryByTestId } = render(
+      <ProductThumb src="https://img.test/a.jpg" zoom />,
+    );
+    const thumb = container.firstElementChild!;
+    expect(queryByTestId('thumb-preview')).toBeNull();
+    fireEvent.mouseEnter(thumb);
+    expect(queryByTestId('thumb-preview')).not.toBeNull();
+    fireEvent.mouseLeave(thumb);
+    expect(queryByTestId('thumb-preview')).toBeNull();
+  });
+
+  test('no preview without the zoom option', () => {
+    const { container, queryByTestId } = render(
+      <ProductThumb src="https://img.test/a.jpg" />,
+    );
+    fireEvent.mouseEnter(container.firstElementChild!);
+    expect(queryByTestId('thumb-preview')).toBeNull();
+  });
+});

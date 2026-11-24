@@ -139,6 +139,12 @@ thead .sku {
   width: 23%;
 }
 
+.card .none {
+  color: var(--text-2);
+  padding: 40px 16px;
+  text-align: center;
+}
+
 .skuBody {
   align-items: flex-start;
   display: flex;

@@ -57,8 +57,8 @@ describe('App (with a fake Domo)', () => {
     );
     const summary = await screen.findByRole('list', { name: 'Price summary' });
     expect(within(summary).getAllByRole('button')).toHaveLength(2);
-    expect(screen.getByRole('combobox', { name: 'SKU' })).toHaveValue(
-      '7509546060781',
+    expect(screen.getByRole('region', { name: 'Product' })).toHaveTextContent(
+      'EAN 7509546060781',
     );
     expect(
       domo.queries.filter((q) => q.where?.[0]?.column === 'ean'),
@@ -69,11 +69,10 @@ describe('App (with a fake Domo)', () => {
     const domo = renderApp();
     await screen.findByText(/Latest run/);
     await userEvent.click(screen.getByRole('tab', { name: 'Price history' }));
-    await screen.findByRole('combobox', { name: 'SKU' });
-    await userEvent.selectOptions(
-      screen.getByRole('combobox', { name: 'SKU' }),
-      '7509546651040',
+    await userEvent.click(
+      await screen.findByRole('combobox', { name: 'Find a product' }),
     );
+    await userEvent.click(screen.getByRole('option', { name: /LUMINOUS/ }));
     expect(
       await screen.findByText('No prices recorded for this SKU yet.'),
     ).toBeInTheDocument();
