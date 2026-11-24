@@ -104,7 +104,7 @@ export const Overview: FC<OverviewProps> = ({ overview: o, comparison }) => {
                 whole: s.checked,
                 valueText: `${s.priced}/${s.checked}`,
                 extra:
-                  s.errors || blocked || reasons ? (
+                  s.errors || blocked || reasons || s.partner ? (
                     <>
                       {s.errors > 0 && (
                         <StatusTag
@@ -117,6 +117,11 @@ export const Overview: FC<OverviewProps> = ({ overview: o, comparison }) => {
                           kind="warning"
                           label={`${blocked} not purchasable`}
                         />
+                      )}
+                      {s.partner > 0 && (
+                        <span className={styles.reasons}>
+                          {s.partner} sold by partners
+                        </span>
                       )}
                       {reasons && (
                         <span className={styles.reasons}>{reasons}</span>

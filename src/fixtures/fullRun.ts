@@ -61,12 +61,15 @@ export const fullRun: PriceRow[] = (() => {
         );
       } else {
         const blocked = roll < 0.13;
+        const partner = roll > 0.93;
         rows.push(
           priceRow({
             ean,
             descSku,
             store,
             price,
+            sellerType: partner ? 'partner' : 'store',
+            seller: partner ? 'Duda Makeup' : store,
             // Placeholder host: Storybook shows the fallback tile for these.
             imageUrl: `https://example.invalid/${ean}.png`,
             url: `https://example.invalid/p/${ean}`,

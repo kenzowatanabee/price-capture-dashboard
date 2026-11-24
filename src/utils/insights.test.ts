@@ -272,3 +272,36 @@ describe('skuImage', () => {
     expect(skuImage([priceRow(), undefined])).toBeNull();
   });
 });
+
+describe('partner sellers', () => {
+  const rows = [
+    priceRow({ store: 'A', price: 20, sellerType: 'store' }),
+    priceRow({ store: 'B', price: 25 }), // older row: seller type unknown
+    priceRow({
+      store: 'C',
+      price: 9,
+      sellerType: 'partner',
+      seller: 'Duda Makeup',
+    }),
+  ];
+
+  test('a partner price is never the lowest and has no premium', () => {
+    const row = buildMatrix(rows).rows[0];
+    expect(row.min).toBe(20);
+    expect(row.cheapest).toEqual(['A']);
+    expect(cellPremium(row.cells.C, row.min)).toBeNull();
+    expect(cellPremium(row.cells.B, row.min)).toBeCloseTo(0.25);
+  });
+
+  test('partner offers stay out of the store ranking and the history lines', () => {
+    expect(
+      storeComparison(rows).find((s) => s.store === 'C')?.avgPremium,
+    ).toBeNull();
+    expect(buildHistory(rows).stores).toEqual(['A', 'B']);
+  });
+
+  test('the overview counts them per store', () => {
+    const stores = computeOverview(rows).stores;
+    expect(stores.map((s) => s.partner)).toEqual([0, 0, 1]);
+  });
+});

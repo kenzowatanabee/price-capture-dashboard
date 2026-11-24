@@ -4,6 +4,7 @@ import type { PriceRow } from 'services/prices';
 import { discount, formatAmount, formatPct, formatPremium } from 'utils/format';
 import {
   cellPremium,
+  isPartner,
   type Matrix,
   premiumStep,
   reasonLabel,
@@ -29,7 +30,13 @@ const LEGEND_STEPS = [
 ] as const;
 
 const tooltip = (row: PriceRow) =>
-  [row.foundName, row.message].filter(Boolean).join('\n');
+  [
+    row.foundName,
+    isPartner(row) && `Sold by a partner: ${row.seller || 'unnamed seller'}`,
+    row.message,
+  ]
+    .filter(Boolean)
+    .join('\n');
 
 /** Links the content to the store's own product page, so a price can be checked at its source. */
 const StoreLink: FC<{ row: PriceRow; children: ReactNode }> = ({
@@ -67,10 +74,12 @@ const Cell: FC<{ row: PriceRow | undefined; min: number | null }> = ({
   const premium = cellPremium(row, min);
   const step = premiumStep(premium);
   const blocked = row.available === false;
+  const partner = isPartner(row);
   const classes = [
     styles.cell,
     step != null ? STEP_CLASS[step] : '',
     blocked ? styles.notPurchasable : '',
+    partner ? styles.partner : '',
   ].join(' ');
   return (
     <td className={classes} title={tooltip(row)} data-step={step ?? undefined}>
@@ -86,13 +95,15 @@ const Cell: FC<{ row: PriceRow | undefined; min: number | null }> = ({
         {off != null && <span className={styles.promo}>−{formatPct(off)}</span>}
       </div>
       <div className={styles.sub}>
-        {blocked
-          ? 'not purchasable'
-          : step === 0
-            ? '▼ Lowest'
-            : premium != null
-              ? formatPremium(premium)
-              : ''}
+        {partner
+          ? `partner${row.seller ? `: ${row.seller}` : ''}`
+          : blocked
+            ? 'not purchasable'
+            : step === 0
+              ? '▼ Lowest'
+              : premium != null
+                ? formatPremium(premium)
+                : ''}
       </div>
     </td>
   );
@@ -267,6 +278,10 @@ export const PriceMatrix: FC<PriceMatrixProps> = ({
           <span>
             <span className={styles.warnIcon}>!</span>listed but not purchasable
             (excluded from lowest and gap)
+          </span>
+          <span>
+            <span className={styles.partnerKey}>12,90</span> sold by a partner
+            on the store&apos;s site (excluded from lowest and gap)
           </span>
           <span>
             Click a price to open that store&apos;s product page · hover a cell

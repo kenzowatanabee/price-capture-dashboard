@@ -19,6 +19,10 @@ export interface PriceRow {
   /** VTEX stores: can it be bought for delivery to the reference CEP. Null when unknown. */
   available: boolean | null;
   seller: string;
+  /** The store's id for the seller of this offer. */
+  sellerId: string;
+  /** Sold by the store itself or by a marketplace partner on its site; null when unknown. */
+  sellerType: 'store' | 'partner' | null;
   url: string;
   /** Product picture on the store's own site; empty when the store sent none. */
   imageUrl: string;
@@ -46,6 +50,11 @@ export const parseAvailable = (value?: DataValue): boolean | null => {
   return null;
 };
 
+export const parseSellerType = (value?: DataValue): PriceRow['sellerType'] => {
+  const kind = text(value).trim().toLowerCase();
+  return kind === 'store' || kind === 'partner' ? kind : null;
+};
+
 export const reasonCode = (message: string): string | null => {
   const match = /^([A-Z_]+):/.exec(message.trim());
   return match ? match[1] : null;
@@ -64,6 +73,8 @@ export const toPriceRow = (row: DataRow): PriceRow => ({
   code: reasonCode(text(row.message)),
   available: parseAvailable(row.available),
   seller: text(row.seller),
+  sellerId: text(row.seller_id),
+  sellerType: parseSellerType(row.seller_type),
   url: text(row.url),
   imageUrl: text(row.image_url),
   fetchedAt: text(row.fetched_at),
@@ -86,6 +97,8 @@ const COLUMNS = [
   'fetched_at',
   'fetched_at_brt',
   'image_url',
+  'seller_id',
+  'seller_type',
 ];
 
 /** The run_id of the most recent scraper run (the newest row's run). */

@@ -154,3 +154,26 @@ describe('PriceMatrix links to the store pages', () => {
     expect(screen.getAllByRole('link')).toHaveLength(2);
   });
 });
+
+describe('PriceMatrix partner sellers', () => {
+  test('a partner offer is labelled with the seller and gets no tint', () => {
+    const rows = [
+      priceRow({ store: 'A', price: 20, sellerType: 'store' }),
+      priceRow({
+        store: 'C',
+        price: 9,
+        sellerType: 'partner',
+        seller: 'Duda Makeup',
+      }),
+    ];
+    render(<PriceMatrix matrix={buildMatrix(rows)} />);
+    const cell = cellFor('BABY', 'C');
+    expect(cell).toHaveTextContent('partner: Duda Makeup');
+    expect(cell).not.toHaveAttribute('data-step');
+    expect(cell).toHaveAttribute(
+      'title',
+      expect.stringContaining('Sold by a partner: Duda Makeup'),
+    );
+    expect(cellFor('BABY', 'A')).toHaveTextContent('▼ Lowest');
+  });
+});

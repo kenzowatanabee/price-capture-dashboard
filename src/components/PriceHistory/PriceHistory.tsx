@@ -6,7 +6,7 @@ import { loadHistory, selectHistory } from 'reducers/prices/slice';
 import type { PriceRow } from 'services/prices';
 import { defaultSlots, type SlotMap, toggleHighlight } from 'utils/colors';
 import { formatBRL } from 'utils/format';
-import { buildHistory, buildMatrix } from 'utils/insights';
+import { buildHistory, buildMatrix, isComparable } from 'utils/insights';
 
 import styles from './PriceHistory.module.scss';
 
@@ -46,9 +46,7 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
   const offers = product
     ? Object.values(product.cells).filter((r) => r != null)
     : [];
-  const buyable = offers.filter(
-    (r) => r.price != null && r.available !== false,
-  );
+  const buyable = offers.filter(isComparable);
   const lowestStore = product?.cheapest[0];
   const link = lowestStore ? product.cells[lowestStore]?.url : '';
 
@@ -81,7 +79,8 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
                 'No purchasable price in the latest run'
               )}
               <span>
-                Purchasable at {buyable.length} of {offers.length} stores
+                Sold and purchasable at {buyable.length} of {offers.length}{' '}
+                stores
               </span>
               {link && /^https?:\/\//i.test(link) && (
                 <a href={link} target="_blank" rel="noreferrer">

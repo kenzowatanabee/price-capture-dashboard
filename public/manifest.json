@@ -71,6 +71,14 @@
             {
                "alias": "image_url",
                "columnName": "image_url"
+            },
+            {
+               "alias": "seller_id",
+               "columnName": "seller_id"
+            },
+            {
+               "alias": "seller_type",
+               "columnName": "seller_type"
             }
          ]
       }

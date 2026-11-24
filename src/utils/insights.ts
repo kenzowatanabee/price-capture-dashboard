@@ -3,9 +3,17 @@ import type { PriceRow } from 'services/prices';
 const byText = (a: string, b: string) => a.localeCompare(b, 'pt-BR');
 const isPriced = (row: PriceRow): boolean =>
   row.status === 'Success' && row.price != null;
-/** Priced and not known to be unpurchasable: the offers a customer can actually compare. */
+/** A marketplace partner selling on the store's site: its price is not the store's price. */
+export const isPartner = (row: PriceRow): boolean =>
+  row.sellerType === 'partner';
+/**
+ * The store's own offer that a customer can actually buy: priced, not known to be
+ * unpurchasable, and not sold by a marketplace partner. Only these are compared.
+ */
+export const isComparable = (row: PriceRow): boolean =>
+  isPriced(row) && row.available !== false && !isPartner(row);
 const comparableCell = (row: PriceRow | undefined): row is PriceRow =>
-  row != null && isPriced(row) && row.available !== false;
+  row != null && isComparable(row);
 
 // ---------- price matrix: SKU x store, for one run ----------
 
@@ -82,6 +90,8 @@ export interface StoreHealth {
   /** Priced rows whose purchasability is known (VTEX cart check). */
   availabilityChecked: number;
   purchasable: number;
+  /** Priced rows sold by a marketplace partner, not by the store itself. */
+  partner: number;
   errors: number;
   /** Non-success reason codes, most frequent first. */
   topCodes: { code: string; count: number }[];
@@ -113,6 +123,7 @@ export const computeOverview = (rows: PriceRow[]): Overview => {
       priced: 0,
       availabilityChecked: 0,
       purchasable: 0,
+      partner: 0,
       errors: 0,
       topCodes: [],
       codes: new Map<string, number>(),
@@ -120,6 +131,7 @@ export const computeOverview = (rows: PriceRow[]): Overview => {
     s.checked += 1;
     if (isPriced(row)) {
       s.priced += 1;
+      if (isPartner(row)) s.partner += 1;
       if (row.available != null) {
         s.availabilityChecked += 1;
         if (row.available) s.purchasable += 1;
@@ -193,7 +205,8 @@ export const rowDate = (row: PriceRow): string =>
 
 /** One point per day and store: the last priced observation of that day. Rows must be oldest first. */
 export const buildHistory = (rows: PriceRow[]): HistorySeries => {
-  const priced = rows.filter(isPriced);
+  // a store's line is its own price: partner offers on its site are left out
+  const priced = rows.filter((r) => isPriced(r) && !isPartner(r));
   const stores = [...new Set(priced.map((r) => r.store))].sort(byText);
   const days = new Map<string, HistoryPoint>();
   const urls = new Map<string, string>();
@@ -238,7 +251,7 @@ export interface StoreComparison {
 }
 
 export const storeComparison = (rows: PriceRow[]): StoreComparison[] => {
-  const comparable = rows.filter((r) => isPriced(r) && r.available !== false);
+  const comparable = rows.filter(isComparable);
   const bySku = new Map<string, PriceRow[]>();
   for (const row of comparable) {
     bySku.set(row.ean, [...(bySku.get(row.ean) ?? []), row]);
@@ -309,11 +322,7 @@ export const cellPremium = (
   row: PriceRow | undefined,
   min: number | null,
 ): number | null =>
-  row != null &&
-  isPriced(row) &&
-  row.available !== false &&
-  min != null &&
-  min > 0
+  row != null && isComparable(row) && min != null && min > 0
     ? (row.price as number) / min - 1
     : null;
 
