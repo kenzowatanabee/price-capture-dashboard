@@ -1,3 +1,4 @@
+import { Dropdown } from 'components/Dropdown/Dropdown';
 import { type FC } from 'react';
 import {
   type ProductSegments,
@@ -36,30 +37,32 @@ export const FilterBar: FC<FilterBarProps> = ({
   return (
     <section className={styles.FilterBar} aria-label="Product filters">
       <div className={styles.fields}>
-        {SEGMENT_FIELDS.map((field) => {
+        {SEGMENT_FIELDS.map((field, index) => {
           const options = filterOptions(eans, byEan, filters, field.key);
           const value = filters[field.key] ?? '';
           return (
-            <label key={field.key} className={styles.field}>
-              <span>{field.label}</span>
-              <select
-                value={value}
-                data-active={value ? true : undefined}
-                disabled={!options.length && !value}
-                onChange={(e) => onChange(field.key, e.target.value)}
-              >
-                <option value="">All</option>
-                {/* keep a picked value selectable even if other filters now exclude it */}
-                {value && !options.some((o) => o.value === value) && (
-                  <option value={value}>{value} (0)</option>
-                )}
-                {options.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.value} ({o.count})
-                  </option>
-                ))}
-              </select>
-            </label>
+            <Dropdown
+              key={field.key}
+              label={field.label}
+              caption
+              value={value}
+              active={!!value}
+              align={index >= SEGMENT_FIELDS.length - 2 ? 'end' : 'start'}
+              disabled={!options.length && !value}
+              onChange={(next) => onChange(field.key, next)}
+              options={[
+                { value: '', label: 'All' },
+                // keep a picked value in the list even if other filters now exclude it
+                ...(value && !options.some((o) => o.value === value)
+                  ? [{ value, label: value, count: 0 }]
+                  : []),
+                ...options.map((o) => ({
+                  value: o.value,
+                  label: o.value,
+                  count: o.count,
+                })),
+              ]}
+            />
           );
         })}
       </div>

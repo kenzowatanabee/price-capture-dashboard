@@ -16,44 +16,6 @@
   min-width: 0;
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-
-  span {
-    color: var(--text-2);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  select {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    font: inherit;
-    font-size: 13px;
-    min-width: 0;
-    padding: 7px 8px;
-    text-overflow: ellipsis;
-    width: 100%;
-
-    // a field that is filtering stands out by weight and border, not by colour alone
-    &[data-active] {
-      border-color: var(--text);
-      font-weight: 600;
-    }
-
-    &:disabled {
-      color: var(--muted);
-    }
-  }
-}
-
 .summary {
   align-items: center;
   color: var(--text-2);

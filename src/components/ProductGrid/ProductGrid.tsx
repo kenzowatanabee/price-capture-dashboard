@@ -1,3 +1,4 @@
+import { Dropdown } from 'components/Dropdown/Dropdown';
 import { ProductThumb } from 'components/ProductThumb/ProductThumb';
 import { type FC, useMemo, useState } from 'react';
 import type { ProductSegments } from 'services/segments';
@@ -61,19 +62,19 @@ export const ProductGrid: FC<ProductGridProps> = ({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <label>
-          Sort
-          <select
-            aria-label="Sort products"
+        <div className={styles.sort}>
+          <Dropdown
+            label="Sort products"
             value={sort}
-            onChange={(e) => setSort(e.target.value as ProductSort)}
-          >
-            <option value="name">By name</option>
-            <option value="price">Lowest price first</option>
-            <option value="gap">Biggest price gap first</option>
-            <option value="stores">Sold at fewest stores first</option>
-          </select>
-        </label>
+            onChange={(next) => setSort(next as ProductSort)}
+            options={[
+              { value: 'name', label: 'Sort: by name' },
+              { value: 'price', label: 'Sort: lowest price first' },
+              { value: 'gap', label: 'Sort: biggest gap between stores first' },
+              { value: 'stores', label: 'Sort: sold at fewest stores first' },
+            ]}
+          />
+        </div>
         <span className={styles.count}>
           {rows.length} of {matrix.rows.length} products
         </span>
@@ -129,7 +130,9 @@ export const ProductGrid: FC<ProductGridProps> = ({
                       {stores} of {storeCount} stores
                     </span>
                     {r.spread != null && r.spread > 0 && (
-                      <span>gap {formatPremium(r.spread)}</span>
+                      <span title="The most expensive store's price compared with the lowest">
+                        highest price {formatPremium(r.spread)}
+                      </span>
                     )}
                   </span>
                 </span>

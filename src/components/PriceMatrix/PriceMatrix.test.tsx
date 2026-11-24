@@ -65,9 +65,9 @@ describe('PriceMatrix', () => {
 
   test('sort by biggest price gap', async () => {
     render(<PriceMatrix matrix={buildMatrix(latestRun)} />);
-    await userEvent.selectOptions(
-      screen.getByRole('combobox', { name: 'Sort SKUs' }),
-      'spread',
+    await userEvent.click(screen.getByRole('button', { name: /^Sort SKUs:/ }));
+    await userEvent.click(
+      screen.getByRole('option', { name: /biggest price gap/ }),
     );
     const firstRow = within(table()).getAllByRole('row')[1];
     expect(firstRow).toHaveTextContent('LUMINOUS'); // 70% gap vs 7%

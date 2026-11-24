@@ -1,3 +1,4 @@
+import { Dropdown } from 'components/Dropdown/Dropdown';
 import { ExportButton } from 'components/ExportButton/ExportButton';
 import { ProductThumb } from 'components/ProductThumb/ProductThumb';
 import { type FC, type ReactNode, useMemo, useState } from 'react';
@@ -168,17 +169,17 @@ export const PriceMatrix: FC<PriceMatrixProps> = ({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <label>
-            Sort
-            <select
-              aria-label="Sort SKUs"
+          <div className={styles.sort}>
+            <Dropdown
+              label="Sort SKUs"
               value={sort}
-              onChange={(e) => setSort(e.target.value as MatrixSort)}
-            >
-              <option value="name">By name</option>
-              <option value="spread">Biggest price gap first</option>
-            </select>
-          </label>
+              onChange={(next) => setSort(next as MatrixSort)}
+              options={[
+                { value: 'name', label: 'Sort: by name' },
+                { value: 'spread', label: 'Sort: biggest price gap first' },
+              ]}
+            />
+          </div>
           <label>
             <input
               type="checkbox"

@@ -106,10 +106,10 @@ describe('App with product segmentation', () => {
     renderWithSegments();
     const bar = await screen.findByRole('region', { name: 'Product filters' });
     expect(bar).toHaveTextContent('2 of 2 products');
-    await userEvent.selectOptions(
-      within(bar).getByRole('combobox', { name: 'Segment' }),
-      'Kids',
+    await userEvent.click(
+      within(bar).getByRole('button', { name: /^Segment:/ }),
     );
+    await userEvent.click(within(bar).getByRole('option', { name: /Kids/ }));
     expect(bar).toHaveTextContent('1 of 2 products');
     expect(
       screen.getByRole('group', { name: 'SKUs × stores' }),
@@ -132,16 +132,20 @@ describe('App with product segmentation', () => {
   test('options of the other fields follow the filter, with counts', async () => {
     renderWithSegments();
     const bar = await screen.findByRole('region', { name: 'Product filters' });
-    await userEvent.selectOptions(
-      within(bar).getByRole('combobox', { name: 'Segment' }),
-      'Whitening',
+    await userEvent.click(
+      within(bar).getByRole('button', { name: /^Segment:/ }),
     );
-    const subBrand = within(bar).getByRole('combobox', { name: 'Sub-brand' });
+    await userEvent.click(
+      within(bar).getByRole('option', { name: /Whitening/ }),
+    );
+    await userEvent.click(
+      within(bar).getByRole('button', { name: /^Sub-brand:/ }),
+    );
     expect(
-      within(subBrand)
+      within(bar)
         .getAllByRole('option')
         .map((o) => o.textContent),
-    ).toEqual(['All', 'Luminous White (1)']);
+    ).toEqual(['✓All', 'Luminous White1']);
   });
 
   test('a product card opens that product’s history', async () => {
