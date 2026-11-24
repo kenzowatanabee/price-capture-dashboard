@@ -9,7 +9,7 @@
   "mapping": [
     {
       "alias": "prices",
-      "dataSetId": "REPLACE_WITH_PRICE_TRACKER_DATASET_ID",
+      "dataSetId": "4f8c2a91-7d3e-4b6a-9c51-2e8f0a6d3b74",
       "fields": [
         {
           "alias": "ean",

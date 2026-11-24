@@ -13,7 +13,7 @@ A Domo custom app for the prices collected by [price-capture](https://github.com
 
 ## Data
 
-The app reads the `PRICE_TRACKER` dataset through Domo's SQL API, under the alias `prices` declared in `public/manifest.json`. **Before the first run, replace `REPLACE_WITH_PRICE_TRACKER_DATASET_ID` in `public/manifest.json` with the dataset's ID**, the one in the dataset's Domo URL.
+The app reads the `PRICE_TRACKER` dataset (`4f8c2a91-7d3e-4b6a-9c51-2e8f0a6d3b74`) through Domo's SQL API, under the alias `prices` declared in `public/manifest.json`. If the dataset is ever replaced, update `dataSetId` there.
 
 - The latest run is the most recent `run_id`. Older rows without a `run_id` still appear in the history.
 - Domo returns every value as text. `src/services/prices.ts` turns the rows into typed values.
