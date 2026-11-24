@@ -1,4 +1,12 @@
-import { type FC, type KeyboardEvent, useId, useRef, useState } from 'react';
+import {
+  type FC,
+  type KeyboardEvent,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { normalize } from 'utils/search';
 
 import styles from './Dropdown.module.scss';
 
@@ -24,10 +32,13 @@ export interface DropdownProps {
   align?: 'start' | 'end';
 }
 
+/** Lists longer than this get a search box at the top. */
+const SEARCH_FROM = 8;
+
 /**
- * A styled replacement for the browser's select: a button that opens a list.
- * Keyboard: arrows move, Enter or Space picks, Escape closes, a letter jumps to the next
- * option starting with it.
+ * A styled replacement for the browser's select: a button that opens a list, with a search
+ * box when the list is long. Keyboard: arrows move, Enter picks, Escape closes; without a
+ * search box, a letter jumps to the next option starting with it.
  */
 export const Dropdown: FC<DropdownProps> = ({
   label,
@@ -41,13 +52,25 @@ export const Dropdown: FC<DropdownProps> = ({
 }) => {
   const id = useId();
   const root = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
   const [cursor, setCursor] = useState(0);
+  const [query, setQuery] = useState('');
 
-  const selected = options.find((o) => o.value === value);
-  const current = selected?.label ?? value;
+  const searchable = options.length > SEARCH_FROM;
+  const shown = useMemo(() => {
+    const words = normalize(query).split(/\s+/).filter(Boolean);
+    return words.length
+      ? options.filter((o) =>
+          words.every((word) => normalize(o.label).includes(word)),
+        )
+      : options;
+  }, [options, query]);
+
+  const current = options.find((o) => o.value === value)?.label ?? value;
 
   const show = () => {
+    setQuery('');
     setCursor(
       Math.max(
         0,
@@ -56,37 +79,45 @@ export const Dropdown: FC<DropdownProps> = ({
     );
     setOpen(true);
   };
-  const pick = (option: DropdownOption) => {
+  const close = () => {
     setOpen(false);
+    trigger.current?.focus();
+  };
+  const pick = (option: DropdownOption) => {
+    close();
     if (option.value !== value) onChange(option.value);
   };
 
-  const onKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
-    if (e.key === 'Escape') return setOpen(false);
+  const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
+    if (e.key === 'Escape') {
+      if (open) close();
+      return;
+    }
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault();
       if (!open) return show();
       const step = e.key === 'ArrowDown' ? 1 : -1;
       return setCursor((i) =>
-        Math.max(0, Math.min(options.length - 1, i + step)),
+        Math.max(0, Math.min(shown.length - 1, i + step)),
       );
     }
-    if (open && (e.key === 'Enter' || e.key === ' ')) {
+    const typing = e.target instanceof HTMLInputElement;
+    if (open && (e.key === 'Enter' || (e.key === ' ' && !typing))) {
       e.preventDefault();
-      if (options[cursor]) pick(options[cursor]);
+      if (shown[cursor]) pick(shown[cursor]);
       return;
     }
-    if (open && e.key.length === 1) {
+    if (open && !typing && e.key.length === 1) {
       const letter = e.key.toLowerCase();
-      const after = options.findIndex(
-        (o, i) => i > cursor && o.label.toLowerCase().startsWith(letter),
-      );
-      const first = options.findIndex((o) =>
-        o.label.toLowerCase().startsWith(letter),
-      );
+      const starts = (o: DropdownOption) =>
+        o.label.toLowerCase().startsWith(letter);
+      const after = shown.findIndex((o, i) => i > cursor && starts(o));
+      const first = shown.findIndex(starts);
       if (after >= 0 || first >= 0) setCursor(after >= 0 ? after : first);
     }
   };
+
+  const activeId = open && shown[cursor] ? `${id}-${cursor}` : undefined;
 
   return (
     <div
@@ -103,15 +134,14 @@ export const Dropdown: FC<DropdownProps> = ({
         </span>
       )}
       <button
+        ref={trigger}
         type="button"
         className={styles.trigger}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={`${id}-list`}
         aria-label={`${label}: ${current}`}
-        aria-activedescendant={
-          open && options[cursor] ? `${id}-${cursor}` : undefined
-        }
+        aria-activedescendant={searchable ? undefined : activeId}
         data-active={active || undefined}
         disabled={disabled}
         onClick={() => (open ? setOpen(false) : show())}
@@ -130,34 +160,60 @@ export const Dropdown: FC<DropdownProps> = ({
         </svg>
       </button>
       {open && (
-        <ul
-          id={`${id}-list`}
-          role="listbox"
-          aria-label={label}
-          className={`${styles.list} ${align === 'end' ? styles.end : ''}`}
-        >
-          {options.map((option, i) => (
-            <li
-              key={option.value}
-              id={`${id}-${i}`}
-              role="option"
-              aria-selected={option.value === value}
-              className={i === cursor ? styles.cursor : undefined}
-              // keep focus on the button, so the list does not close before the click lands
-              onMouseDown={(e) => e.preventDefault()}
-              onMouseEnter={() => setCursor(i)}
-              onClick={() => pick(option)}
-            >
-              <span className={styles.check} aria-hidden="true">
-                {option.value === value ? '✓' : ''}
-              </span>
-              <span className={styles.label}>{option.label}</span>
-              {option.count != null && (
-                <span className={styles.count}>{option.count}</span>
-              )}
-            </li>
-          ))}
-        </ul>
+        <div className={`${styles.popup} ${align === 'end' ? styles.end : ''}`}>
+          {searchable && (
+            <input
+              type="text"
+              className={styles.search}
+              aria-label={`Search ${label}`}
+              aria-controls={`${id}-list`}
+              aria-activedescendant={activeId}
+              placeholder="Type to search"
+              autoComplete="off"
+              // the list just opened because the user asked for it, so typing can start at once
+              autoFocus
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setCursor(0);
+              }}
+              onKeyDown={onKeyDown}
+            />
+          )}
+          <ul
+            id={`${id}-list`}
+            role="listbox"
+            aria-label={label}
+            className={styles.list}
+          >
+            {shown.map((option, i) => (
+              <li
+                key={option.value}
+                id={`${id}-${i}`}
+                role="option"
+                aria-selected={option.value === value}
+                className={i === cursor ? styles.cursor : undefined}
+                // keep focus where it is, so the list does not close before the click lands
+                onMouseDown={(e) => e.preventDefault()}
+                onMouseEnter={() => setCursor(i)}
+                onClick={() => pick(option)}
+              >
+                <span className={styles.check} aria-hidden="true">
+                  {option.value === value ? '✓' : ''}
+                </span>
+                <span className={styles.label}>{option.label}</span>
+                {option.count != null && (
+                  <span className={styles.count}>{option.count}</span>
+                )}
+              </li>
+            ))}
+            {!shown.length && (
+              <li className={styles.none} role="presentation">
+                Nothing matches “{query.trim()}”.
+              </li>
+            )}
+          </ul>
+        </div>
       )}
     </div>
   );

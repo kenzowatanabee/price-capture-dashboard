@@ -110,6 +110,9 @@
 
 .heroBody {
   margin-top: 22px;
+  // Same height on every tab: one title line and room for two lines of text, so the page
+  // below does not jump when the tab changes.
+  min-height: 74px;
 
   h1 {
     font-size: 22px;
@@ -117,15 +120,22 @@
     letter-spacing: -0.02em;
     line-height: 1.25;
     margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
 .lede {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   color: rgba(255, 255, 255, 0.84);
+  display: -webkit-box;
   font-size: 14px;
   line-height: 1.5;
   margin: 4px 0 0;
   max-width: 760px;
+  overflow: hidden;
 }
 
 // content rides up over the hero's lower edge

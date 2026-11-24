@@ -69,3 +69,69 @@ describe('Dropdown', () => {
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 });
+
+describe('Dropdown with a long list', () => {
+  const brands = [
+    { value: '', label: 'All' },
+    ...[
+      'Colgate',
+      'Sorriso',
+      'Oral-B',
+      'Close Up',
+      'Sensodyne',
+      'Listerine',
+      'Elmex',
+      'Curaprox',
+      'São João',
+    ].map((b) => ({ value: b, label: b })),
+  ];
+  const open = async () => {
+    const onChange = vi.fn();
+    render(
+      <Dropdown label="Brand" value="" options={brands} onChange={onChange} />,
+    );
+    await userEvent.click(screen.getByRole('button', { name: /^Brand:/ }));
+    return {
+      onChange,
+      search: screen.getByRole('textbox', { name: 'Search Brand' }),
+    };
+  };
+
+  test('a search box appears, focused, and narrows the list (accents ignored)', async () => {
+    const { search } = await open();
+    expect(search).toHaveFocus();
+    await userEvent.type(search, 'sao');
+    expect(screen.getAllByRole('option').map((o) => o.textContent)).toEqual([
+      'São João',
+    ]);
+  });
+
+  test('Enter picks the first match, and focus returns to the field', async () => {
+    const { onChange, search } = await open();
+    await userEvent.type(search, 'sens{Enter}');
+    expect(onChange).toHaveBeenCalledWith('Sensodyne');
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Brand:/ })).toHaveFocus();
+  });
+
+  test('says so when nothing matches, and Escape closes', async () => {
+    const { search } = await open();
+    await userEvent.type(search, 'zzz');
+    expect(screen.getByText(/Nothing matches/)).toBeInTheDocument();
+    await userEvent.keyboard('{Escape}');
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+
+  test('short lists get no search box', async () => {
+    render(
+      <Dropdown
+        label="Segment"
+        value=""
+        options={brands.slice(0, 4)}
+        onChange={vi.fn()}
+      />,
+    );
+    await userEvent.click(screen.getByRole('button', { name: /^Segment:/ }));
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+  });
+});
