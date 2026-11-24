@@ -16,6 +16,14 @@
   padding: 16px 20px;
 }
 
+.actions {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(380px, 100%);
+}
+
 .info {
   flex: 1;
   min-width: 260px;

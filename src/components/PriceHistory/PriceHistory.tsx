@@ -1,4 +1,6 @@
+import { ExportButton } from 'components/ExportButton/ExportButton';
 import { ProductThumb } from 'components/ProductThumb/ProductThumb';
+import { SellerTable } from 'components/SellerTable/SellerTable';
 import { SkuPicker } from 'components/SkuPicker/SkuPicker';
 import { type FC, lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'reducers';
@@ -90,11 +92,18 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
             </p>
           )}
         </div>
-        <SkuPicker
-          skus={skus}
-          selected={selected}
-          onSelect={(ean) => void dispatch(loadHistory(ean))}
-        />
+        <div className={styles.actions}>
+          <SkuPicker
+            skus={skus}
+            selected={selected}
+            onSelect={(ean) => void dispatch(loadHistory(ean))}
+          />
+          <ExportButton
+            rows={history.status === 'ready' ? history.rows : []}
+            filename={`price-history-${selected}`}
+            label="Export this product's history"
+          />
+        </div>
       </section>
 
       {history.status === 'loading' && (
@@ -118,6 +127,8 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
           />
         </Suspense>
       )}
+
+      {offers.length > 0 && <SellerTable rows={offers} />}
     </div>
   );
 };

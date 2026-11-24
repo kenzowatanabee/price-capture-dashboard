@@ -211,19 +211,6 @@ thead .sku {
   background: rgba(42, 120, 214, 0.38);
 }
 
-// sold by a marketplace partner: shown, but visibly not the store's own price
-.partner .price,
-.partnerKey {
-  color: var(--text-2);
-  font-style: italic;
-}
-
-.partner .sub {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .notPurchasable .price {
   color: var(--text-2);
   text-decoration: line-through;

@@ -1,0 +1,47 @@
+.wrap {
+  overflow-x: auto;
+
+  th,
+  td {
+    font-size: 13px;
+    padding: 9px 12px;
+  }
+
+  th {
+    font-size: 12px;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  a {
+    color: var(--blue-600);
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+// a label, not a status: neutral ink on a neutral pill
+.tag {
+  border: 1px solid var(--axis);
+  border-radius: 999px;
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 8px;
+  padding: 1px 8px;
+}

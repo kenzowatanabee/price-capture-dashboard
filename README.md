@@ -15,7 +15,8 @@ A Domo custom app for the prices collected by [price-capture](https://github.com
   - Every price shows its premium over the lowest ("+13.3%"), and the cell tint gets darker as the premium grows. The lowest is marked "▼ Lowest".
   - A badge shows the discount against the store's own list price.
   - A price that cannot be bought is struck through, and is left out of the lowest price and the price gap.
-  - A price from a marketplace partner on the store's site (`seller_type = partner`) is shown in italics with the partner's name. It is left out of the lowest price, the price gap, the store ranking and the history lines, because it is not the store's own price.
+  - A product that a store only sells through a marketplace partner (`seller_type = partner`) shows "Partner only" with no price, because that is not the store's own price. The partner and its price are in the price history tab.
+  - **Export CSV** downloads what is on screen, one line per store and SKU. The file uses `;` as the separator and a decimal comma, so it opens directly in Brazilian Excel.
   - Search by words in any order or by EAN (accents ignored, e.g. `total 90g`), sort by the biggest price gap, and click a SKU to open its history.
   - Every price is a link to that store's own product page, so it can be checked at the source. Missing prices (e.g. out of stock) link too when the store has a page for the product.
   - Each SKU shows a product picture, loaded from the store's own site (`image_url`). When a store sent none, or it fails to load, a neutral tile takes its place. Hover a picture for a large preview.
@@ -24,6 +25,8 @@ A Domo custom app for the prices collected by [price-capture](https://github.com
   - Up to 3 stores are highlighted in colour and the rest stay grey. Click a store in the side list to swap.
   - Hover for every store's price on that day, or switch to the table view.
   - The side list shows each store's latest, lowest and highest price, with a link to the store's product page.
+  - **Sellers in the latest run** lists who sells the product on each store's site (the store itself or a partner, tagged), with price, list price, whether it can be bought, and a link to the page.
+  - **Export this product's history** downloads every recorded row for the product.
 
 ## Data
 

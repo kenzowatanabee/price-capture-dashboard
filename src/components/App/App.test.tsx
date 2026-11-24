@@ -55,7 +55,11 @@ describe('App (with a fake Domo)', () => {
       'aria-selected',
       'true',
     );
-    const summary = await screen.findByRole('list', { name: 'Price summary' });
+    const summary = await screen.findByRole(
+      'list',
+      { name: 'Price summary' },
+      { timeout: 5000 }, // the chart is loaded on demand, which is slow when every test file runs at once
+    );
     expect(within(summary).getAllByRole('button')).toHaveLength(2);
     expect(screen.getByRole('region', { name: 'Product' })).toHaveTextContent(
       'EAN 7509546060781',

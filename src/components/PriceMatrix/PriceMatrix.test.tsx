@@ -156,7 +156,7 @@ describe('PriceMatrix links to the store pages', () => {
 });
 
 describe('PriceMatrix partner sellers', () => {
-  test('a partner offer is labelled with the seller and gets no tint', () => {
+  test('a partner offer shows no price, only that the store has no offer of its own', () => {
     const rows = [
       priceRow({ store: 'A', price: 20, sellerType: 'store' }),
       priceRow({
@@ -168,7 +168,8 @@ describe('PriceMatrix partner sellers', () => {
     ];
     render(<PriceMatrix matrix={buildMatrix(rows)} />);
     const cell = cellFor('BABY', 'C');
-    expect(cell).toHaveTextContent('partner: Duda Makeup');
+    expect(cell).toHaveTextContent('Partner only');
+    expect(cell).not.toHaveTextContent('9,00');
     expect(cell).not.toHaveAttribute('data-step');
     expect(cell).toHaveAttribute(
       'title',
