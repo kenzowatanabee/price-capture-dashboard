@@ -1,10 +1,73 @@
 {
-  "name": "Domo Vite React app",
+  "name": "Price Capture Dashboard",
   "version": "0.0.1",
   "size": {
     "width": 5,
     "height": 3
   },
   "fullpage": true,
-  "mapping": []
+  "mapping": [
+    {
+      "alias": "prices",
+      "dataSetId": "REPLACE_WITH_PRICE_TRACKER_DATASET_ID",
+      "fields": [
+        {
+          "alias": "ean",
+          "columnName": "ean"
+        },
+        {
+          "alias": "desc_sku",
+          "columnName": "desc_sku"
+        },
+        {
+          "alias": "store",
+          "columnName": "store"
+        },
+        {
+          "alias": "status",
+          "columnName": "status"
+        },
+        {
+          "alias": "price_brl",
+          "columnName": "price_brl"
+        },
+        {
+          "alias": "found_name",
+          "columnName": "found_name"
+        },
+        {
+          "alias": "fetched_at",
+          "columnName": "fetched_at"
+        },
+        {
+          "alias": "message",
+          "columnName": "message"
+        },
+        {
+          "alias": "list_price",
+          "columnName": "list_price"
+        },
+        {
+          "alias": "available",
+          "columnName": "available"
+        },
+        {
+          "alias": "seller",
+          "columnName": "seller"
+        },
+        {
+          "alias": "url",
+          "columnName": "url"
+        },
+        {
+          "alias": "run_id",
+          "columnName": "run_id"
+        },
+        {
+          "alias": "fetched_at_brt",
+          "columnName": "fetched_at_brt"
+        }
+      ]
+    }
+  ]
 }
