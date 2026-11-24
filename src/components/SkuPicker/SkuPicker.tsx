@@ -17,9 +17,6 @@ export interface SkuPickerProps {
   onSelect: (ean: string) => void;
 }
 
-/** Rows rendered at once; typing narrows the list long before this matters. */
-const MAX_SHOWN = 60;
-
 /** Type-to-search product picker: matches the description or the EAN, pictures in the list. */
 export const SkuPicker: FC<SkuPickerProps> = ({ skus, selected, onSelect }) => {
   const listId = useId();
@@ -27,11 +24,10 @@ export const SkuPicker: FC<SkuPickerProps> = ({ skus, selected, onSelect }) => {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
 
-  const found = useMemo(
+  const shown = useMemo(
     () => skus.filter((s) => matchesSku(s, query)),
     [skus, query],
   );
-  const shown = found.slice(0, MAX_SHOWN);
 
   const choose = (ean: string) => {
     onSelect(ean);
@@ -105,11 +101,6 @@ export const SkuPicker: FC<SkuPickerProps> = ({ skus, selected, onSelect }) => {
           {!shown.length && (
             <li className={styles.none} role="presentation">
               No product matches “{query.trim()}”.
-            </li>
-          )}
-          {found.length > shown.length && (
-            <li className={styles.none} role="presentation">
-              {found.length - shown.length} more. Keep typing to narrow it down.
             </li>
           )}
         </ul>
