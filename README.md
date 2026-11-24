@@ -4,7 +4,8 @@ A Domo custom app for the prices collected by [price-capture](https://github.com
 
 ## Screens
 
-- **Header:** when the latest run happened (Brasília time) and a warning when no new run has arrived for more than 30 hours.
+- **Header:** a headline that names the cheapest store of the latest run, when that run happened (Brasília time), and a warning when no new run has arrived for more than 30 hours.
+  - The fonts (Inter and Instrument Serif) are bundled with the app, so it needs no external font service inside Domo.
 - **Overview:**
   - Tiles for the share of checks with a price, the share that can actually be bought (VTEX cart check), the SKU × store grid and errors.
   - **Price position:** each store's average premium over the cheapest purchasable offer of the same SKU, cheapest store first, with how often it is the cheapest and how much of it is on promotion.

@@ -2,47 +2,53 @@
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 16px 18px;
+  gap: 18px;
+  padding: 22px 24px;
 }
 
 .cardHeader {
   h2 {
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 600;
+    letter-spacing: -0.01em;
     margin: 0;
   }
 
   p {
     color: var(--text-2);
-    font-size: 12px;
-    margin: 2px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    margin: 4px 0 0;
   }
 }
 
-// ---------- stat tile ----------
+// ---------- stat tile (borderless: the strip around it draws the dividers) ----------
 .tile {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 14px 16px;
+  gap: 6px;
+  padding: 20px 24px;
 }
 
 .tileLabel {
   color: var(--text-2);
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
 }
 
 .tileValue {
-  font-size: 28px;
+  font-size: 36px;
+  font-variant-numeric: tabular-nums;
   font-weight: 600;
-  line-height: 1.2;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 
 .tileDetail {
@@ -105,7 +111,7 @@
   display: grid;
   gap: 2px 12px;
   grid-template-columns: minmax(120px, 190px) minmax(120px, 1fr);
-  padding: 6px;
+  padding: 8px;
 
   &:hover,
   &:focus-visible {
@@ -165,7 +171,7 @@
   display: grid;
   gap: 4px 10px;
   grid-template-columns: minmax(120px, 170px) minmax(80px, 1fr) 56px;
-  padding: 5px 6px;
+  padding: 8px;
 
   &:hover,
   &:focus-visible {

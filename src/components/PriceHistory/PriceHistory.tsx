@@ -55,17 +55,20 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
 
   return (
     <div className={styles.PriceHistory}>
-      <select
-        aria-label="SKU"
-        value={selected ?? ''}
-        onChange={(e) => void dispatch(loadHistory(e.target.value))}
-      >
-        {skus.map((s) => (
-          <option key={s.ean} value={s.ean}>
-            {s.descSku} — {s.ean}
-          </option>
-        ))}
-      </select>
+      <div className={styles.toolbar}>
+        <span aria-hidden="true">SKU</span>
+        <select
+          aria-label="SKU"
+          value={selected ?? ''}
+          onChange={(e) => void dispatch(loadHistory(e.target.value))}
+        >
+          {skus.map((s) => (
+            <option key={s.ean} value={s.ean}>
+              {s.descSku} — {s.ean}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {history.status === 'loading' && (
         <div className={styles.status}>Loading history…</div>

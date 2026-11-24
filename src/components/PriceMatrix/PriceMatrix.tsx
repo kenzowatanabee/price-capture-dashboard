@@ -115,113 +115,119 @@ export const PriceMatrix: FC<PriceMatrixProps> = ({
 
   return (
     <div className={styles.PriceMatrix}>
-      <div className={styles.controls}>
-        <input
-          type="search"
-          aria-label="Search SKU"
-          placeholder="Search by description or EAN"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <label>
-          Sort
-          <select
-            aria-label="Sort SKUs"
-            value={sort}
-            onChange={(e) => setSort(e.target.value as MatrixSort)}
-          >
-            <option value="name">By name</option>
-            <option value="spread">Biggest price gap first</option>
-          </select>
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={onlyPriced}
-            onChange={(e) => setOnlyPriced(e.target.checked)}
-          />
-          Hide SKUs without any price
-        </label>
-        <span className={styles.count}>
-          {rows.length} of {matrix.rows.length} SKUs
-        </span>
-      </div>
-
       <div className={styles.card}>
-        <table aria-label="Price matrix">
-          <thead>
-            <tr>
-              <th className={styles.sku}>SKU</th>
-              {stores.map((store) => (
-                <th key={store} className={styles.num}>
-                  {store}
-                </th>
-              ))}
-              <th
-                className={styles.num}
-                title="Highest purchasable price vs the lowest"
-              >
-                Price gap
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.ean}>
-                <td className={styles.sku}>
-                  {onSelectSku ? (
-                    <button type="button" onClick={() => onSelectSku(r.ean)}>
-                      {r.descSku}
-                    </button>
-                  ) : (
-                    r.descSku
-                  )}
-                  <div className={styles.ean}>{r.ean}</div>
-                </td>
-                {stores.map((store) => (
-                  <Cell key={store} row={r.cells[store]} min={r.min} />
-                ))}
-                <td className={styles.num}>
-                  <span className={styles.spread}>
-                    {formatPremium(r.spread)}
-                    <span className={styles.spreadTrack} aria-hidden="true">
-                      {r.spread != null && maxSpread > 0 && r.spread > 0 && (
-                        <span
-                          className={styles.spreadBar}
-                          style={{ width: `${(r.spread / maxSpread) * 100}%` }}
-                        />
-                      )}
-                    </span>
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+        <div className={styles.controls}>
+          <input
+            type="search"
+            aria-label="Search SKU"
+            placeholder="Search by description or EAN"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <label>
+            Sort
+            <select
+              aria-label="Sort SKUs"
+              value={sort}
+              onChange={(e) => setSort(e.target.value as MatrixSort)}
+            >
+              <option value="name">By name</option>
+              <option value="spread">Biggest price gap first</option>
+            </select>
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              checked={onlyPriced}
+              onChange={(e) => setOnlyPriced(e.target.checked)}
+            />
+            Hide SKUs without any price
+          </label>
+          <span className={styles.count}>
+            {rows.length} of {matrix.rows.length} SKUs
+          </span>
+        </div>
 
-      <div className={styles.legend}>
-        <span
-          className={styles.scale}
-          aria-label="Premium over the lowest purchasable price"
-        >
-          Above the lowest:
-          {LEGEND_STEPS.map(([cls, text]) => (
-            <span key={text} className={styles.scaleStep}>
-              <span className={`${styles.swatch} ${cls}`} />
-              {text}
-            </span>
-          ))}
-        </span>
-        <span>
-          <span className={styles.promo}>−7%</span> discount vs the store&apos;s
-          own list price
-        </span>
-        <span>
-          <span className={styles.warnIcon}>!</span>listed but not purchasable
-          (excluded from lowest and gap)
-        </span>
-        <span>Hover a cell for the store&apos;s product name and details</span>
+        <div className={styles.scroll}>
+          <table aria-label="Price matrix">
+            <thead>
+              <tr>
+                <th className={styles.sku}>SKU</th>
+                {stores.map((store) => (
+                  <th key={store} className={styles.num}>
+                    {store}
+                  </th>
+                ))}
+                <th
+                  className={styles.num}
+                  title="Highest purchasable price vs the lowest"
+                >
+                  Price gap
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.ean}>
+                  <td className={styles.sku}>
+                    {onSelectSku ? (
+                      <button type="button" onClick={() => onSelectSku(r.ean)}>
+                        {r.descSku}
+                      </button>
+                    ) : (
+                      r.descSku
+                    )}
+                    <div className={styles.ean}>{r.ean}</div>
+                  </td>
+                  {stores.map((store) => (
+                    <Cell key={store} row={r.cells[store]} min={r.min} />
+                  ))}
+                  <td className={styles.num}>
+                    <span className={styles.spread}>
+                      {formatPremium(r.spread)}
+                      <span className={styles.spreadTrack} aria-hidden="true">
+                        {r.spread != null && maxSpread > 0 && r.spread > 0 && (
+                          <span
+                            className={styles.spreadBar}
+                            style={{
+                              width: `${(r.spread / maxSpread) * 100}%`,
+                            }}
+                          />
+                        )}
+                      </span>
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className={styles.legend}>
+          <span
+            className={styles.scale}
+            aria-label="Premium over the lowest purchasable price"
+          >
+            Above the lowest:
+            {LEGEND_STEPS.map(([cls, text]) => (
+              <span key={text} className={styles.scaleStep}>
+                <span className={`${styles.swatch} ${cls}`} />
+                {text}
+              </span>
+            ))}
+          </span>
+          <span>
+            <span className={styles.promo}>−7%</span> discount vs the
+            store&apos;s own list price
+          </span>
+          <span>
+            <span className={styles.warnIcon}>!</span>listed but not purchasable
+            (excluded from lowest and gap)
+          </span>
+          <span>
+            Hover a cell for the store&apos;s product name and details
+          </span>
+        </div>
       </div>
     </div>
   );

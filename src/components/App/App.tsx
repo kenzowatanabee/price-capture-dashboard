@@ -13,6 +13,7 @@ import {
   type Tab,
 } from 'reducers/prices/slice';
 import { formatAge, hoursSince } from 'utils/format';
+import { type Headline, overviewHeadline } from 'utils/headline';
 import { buildMatrix, computeOverview, storeComparison } from 'utils/insights';
 
 import styles from './App.module.scss';
@@ -25,6 +26,52 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'matrix', label: 'Price matrix' },
   { id: 'history', label: 'Price history' },
 ];
+
+const TAB_COPY: Record<Exclude<Tab, 'overview'>, Headline> = {
+  matrix: {
+    title: 'Every SKU, at every store.',
+    lede: 'The latest price of each SKU, and how far each store sits above the lowest purchasable offer.',
+  },
+  history: {
+    title: 'How prices moved.',
+    lede: 'One line per store, using the last price captured each day.',
+  },
+};
+
+const FALLBACK: Headline = {
+  title: 'Store prices, side by side.',
+  lede: 'Daily prices of the tracked SKUs across Brazilian pharmacy chains.',
+};
+
+/** Decorative hills behind the header; carries no data. */
+const HeroArt: FC = () => (
+  <div className={styles.art} aria-hidden="true">
+    <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path
+        className={styles.hillBack}
+        d="M0,210 C220,120 430,140 650,196 C870,252 1060,104 1440,160 L1440,320 L0,320 Z"
+      />
+      <path
+        className={styles.hillFront}
+        d="M0,286 C300,206 520,300 800,252 C1040,210 1240,256 1440,214 L1440,320 L0,320 Z"
+      />
+    </svg>
+  </div>
+);
+
+const Logo: FC = () => (
+  <svg className={styles.logo} viewBox="0 0 28 28" aria-hidden="true">
+    <rect width="28" height="28" rx="8" fill="#ffffff" />
+    <path
+      d="M7 9.5h6v5h5v4.5h3.5"
+      fill="none"
+      stroke="#1238c4"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 
 export const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -81,44 +128,67 @@ export const App: FC = () => {
     content = <PriceHistory latestRows={latest.rows} />;
   }
 
+  const ready = latest.status === 'ready' && latest.rows.length > 0;
+  const copy = !ready
+    ? FALLBACK
+    : tab === 'overview'
+      ? overviewHeadline(comparison, overview.skus)
+      : TAB_COPY[tab];
+
   return (
     <div className={styles.App}>
-      <header className={styles.header}>
-        <h1>Price Capture</h1>
-        {latest.status === 'ready' && latest.rows.length > 0 && (
-          <span className={styles.run}>
-            <span>
-              Latest run: {overview.fetchedAtBrt.slice(0, 16) || '—'} (Brasília)
-              · {latest.runId}
-            </span>
-            {age != null &&
-              (age > STALE_AFTER_HOURS ? (
+      <header className={styles.hero}>
+        <HeroArt />
+        <div className={styles.bar}>
+          <div className={styles.brand}>
+            <Logo />
+            Price Capture
+          </div>
+          <nav className={styles.tabs} role="tablist">
+            {TABS.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                role="tab"
+                aria-selected={tab === t.id}
+                onClick={() => dispatch(setTab(t.id))}
+              >
+                {t.label}
+              </button>
+            ))}
+          </nav>
+          {ready && age != null && (
+            <div className={styles.fresh}>
+              {age > STALE_AFTER_HOURS ? (
                 <StatusTag
                   kind="warning"
                   label={`No new run for ${formatAge(age).replace(' ago', '')}`}
                 />
               ) : (
                 <StatusTag kind="good" label={`Updated ${formatAge(age)}`} />
-              ))}
-          </span>
-        )}
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className={styles.heroBody}>
+          {ready && (
+            <p className={styles.eyebrow}>
+              Latest run: {overview.fetchedAtBrt.slice(0, 16) || '—'} (Brasília)
+              · {latest.runId}
+            </p>
+          )}
+          <h1>{copy.title}</h1>
+          <p className={styles.lede}>{copy.lede}</p>
+        </div>
       </header>
 
-      <nav className={styles.tabs} role="tablist">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            role="tab"
-            aria-selected={tab === t.id}
-            onClick={() => dispatch(setTab(t.id))}
-          >
-            {t.label}
-          </button>
-        ))}
-      </nav>
-
       <main>{content}</main>
+
+      <footer className={styles.footer}>
+        <span>Price Capture</span>
+        <span>Source: PRICE_TRACKER dataset in Domo · prices in BRL</span>
+      </footer>
     </div>
   );
 };
