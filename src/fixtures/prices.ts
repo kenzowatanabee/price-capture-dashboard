@@ -153,6 +153,36 @@ export const toDataRow = (row: PriceRow): DataRow => ({
   fetched_at_brt: row.fetchedAtBrt,
 });
 
+/** Segmentation rows as the segmentation dataset returns them (keys are the manifest aliases). */
+export const latestSegments: DataRow[] = [
+  {
+    ean: '7509546060781',
+    CATEGORY: 'Oral Care',
+    SUB_CATEGORY: 'Toothpaste',
+    SUPPLIER: 'Colgate-Palmolive',
+    BRAND: 'Colgate',
+    SUB_BRAND: 'Baby',
+    SEGMENT: 'Kids',
+    SUBSEGMENT: 'Fluoride free',
+  },
+  {
+    ean: '7509546651040',
+    CATEGORY: 'Oral Care',
+    SUB_CATEGORY: 'Toothpaste',
+    SUPPLIER: 'Colgate-Palmolive',
+    BRAND: 'Colgate',
+    SUB_BRAND: 'Luminous White',
+    SEGMENT: 'Whitening',
+    SUBSEGMENT: 'Charcoal',
+  },
+];
+
+/** A fake segmentation dataset answering with the given rows. */
+export const fakeSegments =
+  (rows: DataRow[] = latestSegments) =>
+  async (): Promise<DataRow[]> =>
+    rows;
+
 /** A fake Domo: answers the app's queries from the fixtures above. */
 export const fakeDomo = (
   overrides: { fail?: boolean; run?: PriceRow[] } = {},

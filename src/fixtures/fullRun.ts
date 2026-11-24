@@ -31,6 +31,47 @@ const SKUS: [string, string, number][] = [
   ['7509546000050', 'ESCOVA DENTAL COLGATE 360 MEDIA', 17.25],
 ];
 
+const SUB_CATEGORY = (name: string) =>
+  name.startsWith('ENXAGUANTE')
+    ? 'Mouthwash'
+    : name.startsWith('ESCOVA')
+      ? 'Toothbrush'
+      : name.startsWith('FIO')
+        ? 'Floss'
+        : 'Toothpaste';
+
+const SUB_BRAND = (name: string) =>
+  [
+    'TOTAL 12',
+    'LUMINOUS WHITE',
+    'SENSITIVE',
+    'PLAX',
+    'SLIM SOFT',
+    'KIDS',
+    'BABY',
+    'NATURAL EXTRACTS',
+    'TRIPLA ACAO',
+    '360',
+  ].find((s) => name.includes(s)) ?? '';
+
+/** Made-up segmentation for the sample products. */
+export const fullRunSegments = SKUS.map(([ean, name]) => ({
+  ean,
+  CATEGORY: 'Oral Care',
+  SUB_CATEGORY: SUB_CATEGORY(name),
+  SUPPLIER: 'Colgate-Palmolive',
+  BRAND: 'Colgate',
+  SUB_BRAND: SUB_BRAND(name),
+  SEGMENT: /KIDS|BABY/.test(name)
+    ? 'Kids'
+    : /LUMINOUS/.test(name)
+      ? 'Whitening'
+      : /SENSITIVE/.test(name)
+        ? 'Sensitivity'
+        : 'Everyday',
+  SUBSEGMENT: '',
+}));
+
 /** Small deterministic generator, so the sample looks the same on every run. */
 const seeded = (seed: number) => () => {
   seed = (seed * 1664525 + 1013904223) % 4294967296;

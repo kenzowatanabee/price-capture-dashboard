@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fullRun } from 'fixtures/fullRun';
-import { fakeDomo } from 'fixtures/prices';
+import { fullRun, fullRunSegments } from 'fixtures/fullRun';
+import { fakeDomo, fakeSegments } from 'fixtures/prices';
 import { Provider } from 'react-redux';
 import { makeStore } from 'reducers';
 
@@ -20,7 +20,9 @@ type Story = StoryObj<typeof meta>;
 export const WithSampleData: Story = {
   decorators: [
     (story) => (
-      <Provider store={makeStore(fakeDomo().query)}>{story()}</Provider>
+      <Provider store={makeStore(fakeDomo().query, fakeSegments())}>
+        {story()}
+      </Provider>
     ),
   ],
 };
@@ -29,7 +31,12 @@ export const WithSampleData: Story = {
 export const TenStores: Story = {
   decorators: [
     (story) => (
-      <Provider store={makeStore(fakeDomo({ run: fullRun }).query)}>
+      <Provider
+        store={makeStore(
+          fakeDomo({ run: fullRun }).query,
+          fakeSegments(fullRunSegments),
+        )}
+      >
         {story()}
       </Provider>
     ),

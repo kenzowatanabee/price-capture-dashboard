@@ -9,6 +9,8 @@ export interface DataQuery {
   select: string[];
   /** Column = value conditions, combined with AND. */
   where?: { column: string; equals: string }[];
+  /** Collapse rows to one per combination of these columns. */
+  groupBy?: string[];
   orderBy?: { column: string; direction: 'ascending' | 'descending' };
   limit?: number;
 }
@@ -19,12 +21,16 @@ export type QueryFn = (query: DataQuery) => Promise<DataRow[]>;
 /** Alias of the PRICE_TRACKER dataset, as declared in public/manifest.json. */
 export const PRICES_ALIAS = 'prices';
 
+/** Alias of the dataset that adds the product segmentation to every price row. */
+export const SEGMENTS_ALIAS = 'fct_drugs_price_snapshots';
+
 /** Translates a DataQuery into Domo's query builder. */
 export const buildQuery = (q: DataQuery): Query => {
   let query = new Query().select(q.select);
   for (const condition of q.where ?? []) {
     query = query.where(condition.column).equals(condition.equals);
   }
+  if (q.groupBy?.length) query = query.groupBy(q.groupBy);
   if (q.orderBy) {
     query = query.orderBy(
       q.orderBy.column,

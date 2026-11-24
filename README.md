@@ -6,6 +6,9 @@ A Domo custom app for the prices collected by [price-capture](https://github.com
 
 - **Header:** a headline that names the cheapest store of the latest run, when that run happened (Brasília time), and a warning when no new run has arrived for more than 30 hours.
   - The font (Inter) is bundled with the app, so it needs no external font service inside Domo.
+- **Product filters:** one dropdown per segmentation field (category, sub-category, supplier, brand, sub-brand, segment, subsegment), shown on every tab. A choice narrows all tabs at once. Each dropdown only offers values that still lead to products, with the number of products in brackets.
+  - The segmentation comes from a second dataset (`fct_drugs_price_snapshots` in the manifest). If it cannot be loaded, the app still works and says the filters are unavailable.
+- **Products:** one card per product with its picture, segmentation, lowest price and where, how many stores sell it themselves, and the price gap. Search, sort, and click a card to open its history.
 - **Overview:**
   - Tiles for the share of checks with a price, the share that can actually be bought (VTEX cart check), the SKU × store grid and errors.
   - **Price position:** each store's average premium over the cheapest purchasable offer of the same SKU, cheapest store first, with how often it is the cheapest and how much of it is on promotion.

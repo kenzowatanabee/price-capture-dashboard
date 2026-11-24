@@ -16,6 +16,17 @@ describe('data API queries', () => {
     );
   });
 
+  test('group by: one row per combination of the columns', () => {
+    expect(
+      buildQuery({
+        select: ['ean', 'BRAND'],
+        groupBy: ['ean', 'BRAND'],
+      }).query('fct_drugs_price_snapshots'),
+    ).toBe(
+      "/data/v2/fct_drugs_price_snapshots?fields=ean, BRAND&groupby='ean','BRAND'",
+    );
+  });
+
   test('equality filter', () => {
     expect(
       buildQuery({

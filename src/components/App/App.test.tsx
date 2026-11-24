@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import { fakeDomo } from 'fixtures/prices';
+import { fakeDomo, fakeSegments } from 'fixtures/prices';
 import { Provider } from 'react-redux';
 import { makeStore } from 'reducers';
 import { afterEach, describe, expect, test, vi } from 'vitest';
@@ -91,5 +91,99 @@ describe('App (with a fake Domo)', () => {
       await screen.findByText(/Could not load prices: Domo is unreachable/),
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();
+  });
+});
+
+describe('App with product segmentation', () => {
+  const renderWithSegments = () =>
+    render(
+      <Provider store={makeStore(fakeDomo().query, fakeSegments())}>
+        <App />
+      </Provider>,
+    );
+
+  test('a filter narrows every tab, and clearing restores it', async () => {
+    renderWithSegments();
+    const bar = await screen.findByRole('region', { name: 'Product filters' });
+    expect(bar).toHaveTextContent('2 of 2 products');
+    await userEvent.selectOptions(
+      within(bar).getByRole('combobox', { name: 'Segment' }),
+      'Kids',
+    );
+    expect(bar).toHaveTextContent('1 of 2 products');
+    expect(
+      screen.getByRole('group', { name: 'SKUs × stores' }),
+    ).toHaveTextContent('1 × 4');
+
+    await userEvent.click(screen.getByRole('tab', { name: 'Products' }));
+    const cards = within(
+      screen.getByRole('list', { name: 'Products' }),
+    ).getAllByRole('button');
+    expect(cards).toHaveLength(1);
+    expect(cards[0]).toHaveTextContent('BABY');
+    expect(cards[0]).toHaveTextContent('Kids');
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Clear filters' }),
+    );
+    expect(bar).toHaveTextContent('2 of 2 products');
+  });
+
+  test('options of the other fields follow the filter, with counts', async () => {
+    renderWithSegments();
+    const bar = await screen.findByRole('region', { name: 'Product filters' });
+    await userEvent.selectOptions(
+      within(bar).getByRole('combobox', { name: 'Segment' }),
+      'Whitening',
+    );
+    const subBrand = within(bar).getByRole('combobox', { name: 'Sub-brand' });
+    expect(
+      within(subBrand)
+        .getAllByRole('option')
+        .map((o) => o.textContent),
+    ).toEqual(['All', 'Luminous White (1)']);
+  });
+
+  test('a product card opens that product’s history', async () => {
+    renderWithSegments();
+    await screen.findByRole('region', { name: 'Product filters' });
+    await userEvent.click(screen.getByRole('tab', { name: 'Products' }));
+    await userEvent.click(screen.getByRole('button', { name: /BABY/ }));
+    expect(screen.getByRole('tab', { name: 'Price history' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+  });
+
+  test('without segmentation the app works and shows no filter bar', async () => {
+    render(
+      <Provider store={makeStore(fakeDomo().query)}>
+        <App />
+      </Provider>,
+    );
+    await screen.findByText(/Latest run/);
+    expect(
+      screen.queryByRole('region', { name: 'Product filters' }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Products' })).toBeInTheDocument();
+  });
+});
+
+describe('App when the segmentation fails to load', () => {
+  test('prices still show, with a note that filters are unavailable', async () => {
+    const failing = async () => {
+      throw new Error('HTTP 400');
+    };
+    render(
+      <Provider store={makeStore(fakeDomo().query, failing)}>
+        <App />
+      </Provider>,
+    );
+    expect(
+      await screen.findByText(/Product filters are unavailable/),
+    ).toHaveTextContent('HTTP 400');
+    expect(
+      screen.getByRole('region', { name: 'Price position' }),
+    ).toBeInTheDocument();
   });
 });

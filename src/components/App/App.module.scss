@@ -147,6 +147,16 @@ main {
   text-align: center;
 }
 
+.notice {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-2);
+  font-size: 13px;
+  margin: 0;
+  padding: 10px 16px;
+}
+
 .error {
   color: var(--bad);
 }

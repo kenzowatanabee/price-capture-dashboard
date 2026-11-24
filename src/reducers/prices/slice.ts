@@ -5,15 +5,23 @@ import {
   fetchRun,
   type PriceRow,
 } from 'services/prices';
+import {
+  fetchSegments,
+  type ProductSegments,
+  type SegmentKey,
+} from 'services/segments';
+import type { SegmentFilters } from 'utils/segments';
 
 import { createAppSlice } from '../createAppSlice';
 
 export type LoadStatus = 'idle' | 'loading' | 'ready' | 'error';
-export type Tab = 'overview' | 'matrix' | 'history';
+export type Tab = 'overview' | 'products' | 'matrix' | 'history';
 
 /** Passed to every thunk as `extra`, so tests can swap Domo for a fake. */
 export interface ThunkExtra {
   query: QueryFn;
+  /** Runs against the dataset that carries the product segmentation. */
+  segmentsQuery: QueryFn;
 }
 
 interface State {
@@ -30,12 +38,21 @@ interface State {
     rows: PriceRow[];
     error: string | null;
   };
+  /** Product segmentation by EAN. Optional: the app works without it, just with no filters. */
+  segments: {
+    status: LoadStatus;
+    byEan: Record<string, ProductSegments>;
+    error: string | null;
+  };
+  filters: SegmentFilters;
 }
 
 const initialState: State = {
   tab: 'overview',
   latest: { status: 'idle', runId: null, rows: [], error: null },
   history: { status: 'idle', ean: null, rows: [], error: null },
+  segments: { status: 'idle', byEan: {}, error: null },
+  filters: {},
 };
 
 const message = (error: { message?: string }) =>
@@ -48,6 +65,34 @@ export const PricesSlice = createAppSlice({
     setTab: create.reducer<Tab>((state, { payload }) => {
       state.tab = payload;
     }),
+
+    setFilter: create.reducer<{ key: SegmentKey; value: string }>(
+      (state, { payload }) => {
+        if (payload.value) state.filters[payload.key] = payload.value;
+        else delete state.filters[payload.key];
+      },
+    ),
+    clearFilters: create.reducer((state) => {
+      state.filters = {};
+    }),
+
+    loadSegments: create.asyncThunk(
+      async (_: void, { extra }) =>
+        fetchSegments((extra as ThunkExtra).segmentsQuery),
+      {
+        pending: (state) => {
+          state.segments.status = 'loading';
+          state.segments.error = null;
+        },
+        fulfilled: (state, { payload }) => {
+          state.segments = { status: 'ready', byEan: payload, error: null };
+        },
+        rejected: (state, { error }) => {
+          state.segments.status = 'error';
+          state.segments.error = message(error);
+        },
+      },
+    ),
 
     // the most recent scraper run: its id and all of its rows
     loadLatestRun: create.asyncThunk(
@@ -109,10 +154,25 @@ export const PricesSlice = createAppSlice({
     selectTab: (state) => state.tab,
     selectLatest: (state) => state.latest,
     selectHistory: (state) => state.history,
+    selectSegments: (state) => state.segments,
+    selectFilters: (state) => state.filters,
   },
 });
 
-export const { setTab, loadLatestRun, loadHistory } = PricesSlice.actions;
-export const { selectTab, selectLatest, selectHistory } = PricesSlice.selectors;
+export const {
+  setTab,
+  setFilter,
+  clearFilters,
+  loadSegments,
+  loadLatestRun,
+  loadHistory,
+} = PricesSlice.actions;
+export const {
+  selectTab,
+  selectLatest,
+  selectHistory,
+  selectSegments,
+  selectFilters,
+} = PricesSlice.selectors;
 
 export default PricesSlice.reducer;

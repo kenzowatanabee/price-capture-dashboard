@@ -9,7 +9,12 @@ import {
 } from '@reduxjs/toolkit';
 //-- importRef
 import { useDispatch, useSelector } from 'react-redux';
-import { domoQuery, PRICES_ALIAS, type QueryFn } from 'services/domo';
+import {
+  domoQuery,
+  PRICES_ALIAS,
+  type QueryFn,
+  SEGMENTS_ALIAS,
+} from 'services/domo';
 
 import PricesSlice, { type ThunkExtra } from './prices/slice';
 
@@ -18,12 +23,26 @@ const rootReducer = combineReducers({
   //-- reducerRef
 });
 
-/** Builds a store; tests pass a fake query instead of Domo's SQL API. */
-export const makeStore = (query: QueryFn = domoQuery(PRICES_ALIAS)) =>
+const NO_SEGMENTS: QueryFn = async () => [];
+
+/**
+ * Builds a store. With no arguments it talks to Domo. Tests and stories pass a fake `query`;
+ * unless they also pass a fake `segmentsQuery`, there is simply no segmentation.
+ */
+export const makeStore = (query?: QueryFn, segmentsQuery?: QueryFn) =>
   configureStore({
     reducer: rootReducer,
     middleware: (getDefault) =>
-      getDefault({ thunk: { extraArgument: { query } satisfies ThunkExtra } }),
+      getDefault({
+        thunk: {
+          extraArgument: {
+            query: query ?? domoQuery(PRICES_ALIAS),
+            segmentsQuery:
+              segmentsQuery ??
+              (query ? NO_SEGMENTS : domoQuery(SEGMENTS_ALIAS)),
+          } satisfies ThunkExtra,
+        },
+      }),
   });
 
 export const store = makeStore();
