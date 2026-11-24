@@ -79,6 +79,14 @@
             {
                "alias": "seller_type",
                "columnName": "seller_type"
+            },
+            {
+               "alias": "main_offer",
+               "columnName": "main_offer"
+            },
+            {
+               "alias": "seller_cnpj",
+               "columnName": "seller_cnpj"
             }
          ]
       }

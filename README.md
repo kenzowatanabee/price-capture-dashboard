@@ -25,10 +25,12 @@ A Domo custom app for the prices collected by [price-capture](https://github.com
   - Up to 3 stores are highlighted in colour and the rest stay grey. Click a store in the side list to swap.
   - Hover for every store's price on that day, or switch to the table view.
   - The side list shows each store's latest, lowest and highest price, with a link to the store's product page.
-  - **Sellers in the latest run** lists who sells the product on each store's site (the store itself or a partner, tagged), with price, list price, whether it can be bought, and a link to the page.
+  - **Sellers in the latest run** lists who sells the product on each store's site (the store itself or a partner, tagged), with price, list price, whether it can be bought, and a link to the page. A store with several sellers for the product gets one line per seller.
   - **Export this product's history** downloads every recorded row for the product.
 
 ## Data
+
+The dataset can hold several rows per store and product in one run: the main row, plus one per other seller on the store's site (`main_offer = false`). The app compares and counts main rows only; the other rows feed the sellers table.
 
 The app reads the `PRICE_TRACKER` dataset (`664c99b0-c76b-4800-b46e-b36de6e7bc71`) through Domo's SQL API, under the alias `prices` declared in `public/manifest.json`. If the dataset is ever replaced, update `dataSetId` there.
 

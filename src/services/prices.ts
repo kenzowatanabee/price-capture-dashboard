@@ -23,6 +23,13 @@ export interface PriceRow {
   sellerId: string;
   /** Sold by the store itself or by a marketplace partner on its site; null when unknown. */
   sellerType: 'store' | 'partner' | null;
+  /**
+   * False for the extra rows that list another seller of the same product on the store's site.
+   * The main row is the one compared and counted (older rows have no flag and are all main).
+   */
+  mainOffer: boolean;
+  /** The seller's company registration, when the store publishes it. */
+  sellerCnpj: string;
   url: string;
   /** Product picture on the store's own site; empty when the store sent none. */
   imageUrl: string;
@@ -75,6 +82,8 @@ export const toPriceRow = (row: DataRow): PriceRow => ({
   seller: text(row.seller),
   sellerId: text(row.seller_id),
   sellerType: parseSellerType(row.seller_type),
+  mainOffer: text(row.main_offer).trim().toLowerCase() !== 'false',
+  sellerCnpj: text(row.seller_cnpj),
   url: text(row.url),
   imageUrl: text(row.image_url),
   fetchedAt: text(row.fetched_at),
@@ -99,6 +108,8 @@ const COLUMNS = [
   'image_url',
   'seller_id',
   'seller_type',
+  'main_offer',
+  'seller_cnpj',
 ];
 
 /** The run_id of the most recent scraper run (the newest row's run). */

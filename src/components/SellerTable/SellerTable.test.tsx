@@ -58,3 +58,34 @@ describe('SellerTable', () => {
     expect(pague).toHaveTextContent('Not listed');
   });
 });
+
+describe('SellerTable with several sellers at one store', () => {
+  test('every seller of the product gets a row', () => {
+    render(
+      <SellerTable
+        rows={[
+          priceRow({ store: 'Droga Raia', price: 18.59, sellerType: 'store' }),
+          priceRow({
+            store: 'Droga Raia',
+            price: 25.5,
+            sellerType: 'partner',
+            seller: 'Sense',
+            sellerId: 'sensefarma',
+            mainOffer: false,
+          }),
+          priceRow({
+            store: 'Droga Raia',
+            price: 20.5,
+            sellerType: 'partner',
+            seller: 'Viver Bem',
+            sellerId: 'farmaviver',
+            mainOffer: false,
+          }),
+        ]}
+      />,
+    );
+    expect(
+      bodyRows().map((r) => within(r).getAllByRole('cell')[1].textContent),
+    ).toEqual(['Droga Raia', 'Viver BemPartner', 'SensePartner']);
+  });
+});

@@ -8,7 +8,12 @@ import { loadHistory, selectHistory } from 'reducers/prices/slice';
 import type { PriceRow } from 'services/prices';
 import { defaultSlots, type SlotMap, toggleHighlight } from 'utils/colors';
 import { formatBRL } from 'utils/format';
-import { buildHistory, buildMatrix, isComparable } from 'utils/insights';
+import {
+  buildHistory,
+  buildMatrix,
+  isComparable,
+  mainRows,
+} from 'utils/insights';
 
 import styles from './PriceHistory.module.scss';
 
@@ -34,7 +39,10 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
   const history = useAppSelector(selectHistory);
 
   // one entry per SKU of the latest run, with its picture and its lowest price
-  const skus = useMemo(() => buildMatrix(latestRows).rows, [latestRows]);
+  const skus = useMemo(
+    () => buildMatrix(mainRows(latestRows)).rows,
+    [latestRows],
+  );
 
   const selected = history.ean ?? initialEan ?? skus[0]?.ean ?? null;
 
@@ -52,7 +60,15 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
   const lowestStore = product?.cheapest[0];
   const link = lowestStore ? product.cells[lowestStore]?.url : '';
 
-  const series = useMemo(() => buildHistory(history.rows), [history.rows]);
+  const series = useMemo(
+    () => buildHistory(mainRows(history.rows)),
+    [history.rows],
+  );
+  // every seller of the product in the latest run: the main rows and the other sellers' rows
+  const sellers = useMemo(
+    () => latestRows.filter((r) => r.ean === selected),
+    [latestRows, selected],
+  );
 
   // highlight the cheapest stores of the latest day; a new SKU starts from its own cheapest
   const [slots, setSlots] = useState<SlotMap>({});
@@ -128,7 +144,7 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
         </Suspense>
       )}
 
-      {offers.length > 0 && <SellerTable rows={offers} />}
+      {sellers.length > 0 && <SellerTable rows={sellers} />}
     </div>
   );
 };

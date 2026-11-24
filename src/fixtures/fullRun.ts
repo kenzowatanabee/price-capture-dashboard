@@ -79,6 +79,24 @@ export const fullRun: PriceRow[] = (() => {
             code: blocked ? 'NOT_PURCHASABLE' : null,
           }),
         );
+        // some products also have a partner or two selling on the store's site
+        const extras = random() < 0.25 ? (random() < 0.5 ? 2 : 1) : 0;
+        for (let i = 0; i < extras; i += 1) {
+          rows.push(
+            priceRow({
+              ean,
+              descSku,
+              store,
+              price: Math.round(price * (1.05 + i * 0.12) * 100) / 100,
+              listPrice: null,
+              sellerType: 'partner',
+              seller: i ? 'Viver Bem' : 'Sense',
+              sellerId: i ? 'farmaviver' : 'sensefarma',
+              mainOffer: false,
+              url: `https://example.invalid/p/${ean}?s=${i}`,
+            }),
+          );
+        }
       }
     }
   }

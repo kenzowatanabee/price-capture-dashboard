@@ -14,7 +14,12 @@ import {
 } from 'reducers/prices/slice';
 import { formatAge, hoursSince } from 'utils/format';
 import { type Headline, overviewHeadline } from 'utils/headline';
-import { buildMatrix, computeOverview, storeComparison } from 'utils/insights';
+import {
+  buildMatrix,
+  computeOverview,
+  mainRows,
+  storeComparison,
+} from 'utils/insights';
 
 import styles from './App.module.scss';
 
@@ -66,9 +71,11 @@ export const App: FC = () => {
     void dispatch(loadLatestRun());
   }, [dispatch]);
 
-  const overview = useMemo(() => computeOverview(latest.rows), [latest.rows]);
-  const matrix = useMemo(() => buildMatrix(latest.rows), [latest.rows]);
-  const comparison = useMemo(() => storeComparison(latest.rows), [latest.rows]);
+  // everything that compares or counts uses one row per store and SKU
+  const main = useMemo(() => mainRows(latest.rows), [latest.rows]);
+  const overview = useMemo(() => computeOverview(main), [main]);
+  const matrix = useMemo(() => buildMatrix(main), [main]);
+  const comparison = useMemo(() => storeComparison(main), [main]);
   const age = overview.fetchedAt ? hoursSince(overview.fetchedAt) : null;
 
   const openHistory = (ean: string) => {

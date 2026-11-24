@@ -8,14 +8,15 @@ import { pageUrl } from 'utils/links';
 import styles from './SellerTable.module.scss';
 
 export interface SellerTableProps {
-  /** One SKU's rows from the latest run, one per store. */
+  /** One SKU's rows from the latest run: each store's main row and its other sellers' rows. */
   rows: PriceRow[];
 }
 
 const priced = (row: PriceRow) => row.status === 'Success' && row.price != null;
 
 /** The store's own purchasable offers first (cheapest on top), then partners, then no price. */
-const rank = (row: PriceRow) => (isComparable(row) ? 0 : priced(row) ? 1 : 2);
+const rank = (row: PriceRow) =>
+  row.mainOffer && isComparable(row) ? 0 : priced(row) ? 1 : 2;
 
 const soldBy = (row: PriceRow): string =>
   row.seller || (row.sellerType === 'store' ? row.store : '—');
@@ -29,7 +30,8 @@ export const SellerTable: FC<SellerTableProps> = ({ rows }) => {
     (a, b) =>
       rank(a) - rank(b) ||
       (a.price ?? Infinity) - (b.price ?? Infinity) ||
-      a.store.localeCompare(b.store, 'pt-BR'),
+      a.store.localeCompare(b.store, 'pt-BR') ||
+      a.seller.localeCompare(b.seller, 'pt-BR'),
   );
   return (
     <Card
@@ -52,7 +54,9 @@ export const SellerTable: FC<SellerTableProps> = ({ rows }) => {
             {sorted.map((row) => {
               const href = pageUrl(row.url);
               return (
-                <tr key={row.store}>
+                <tr
+                  key={`${row.store}|${row.sellerId}|${row.seller}|${row.mainOffer}`}
+                >
                   <td>{row.store}</td>
                   <td>
                     {soldBy(row)}

@@ -14,6 +14,7 @@ import {
   buildMatrix,
   cellPremium,
   computeOverview,
+  mainRows,
   premiumStep,
   reasonLabel,
   rowDate,
@@ -303,5 +304,22 @@ describe('partner sellers', () => {
   test('the overview counts them per store', () => {
     const stores = computeOverview(rows).stores;
     expect(stores.map((s) => s.partner)).toEqual([0, 0, 1]);
+  });
+});
+
+describe('main rows', () => {
+  test('other sellers’ rows never reach the comparisons', () => {
+    const rows = [
+      priceRow({ store: 'A', price: 20, sellerType: 'store' }),
+      priceRow({
+        store: 'A',
+        price: 5,
+        sellerType: 'partner',
+        seller: 'P',
+        mainOffer: false,
+      }),
+    ];
+    expect(mainRows(rows)).toHaveLength(1);
+    expect(buildMatrix(mainRows(rows)).rows[0].cells.A?.price).toBe(20);
   });
 });

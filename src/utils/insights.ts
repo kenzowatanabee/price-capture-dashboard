@@ -3,6 +3,13 @@ import type { PriceRow } from 'services/prices';
 const byText = (a: string, b: string) => a.localeCompare(b, 'pt-BR');
 const isPriced = (row: PriceRow): boolean =>
   row.status === 'Success' && row.price != null;
+/**
+ * One row per store and SKU: the rows that are compared and counted. The dataset also holds
+ * extra rows for other sellers of the same product on a store's site; those are dropped here.
+ */
+export const mainRows = (rows: PriceRow[]): PriceRow[] =>
+  rows.filter((r) => r.mainOffer);
+
 /** A marketplace partner selling on the store's site: its price is not the store's price. */
 export const isPartner = (row: PriceRow): boolean =>
   row.sellerType === 'partner';
