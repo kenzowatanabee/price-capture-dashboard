@@ -115,9 +115,30 @@ describe('history', () => {
 
   test('summary per store', () => {
     expect(h.summary).toEqual([
-      { store: 'Drogaria Venancio', latest: 23.59, min: 23.59, max: 23.59 },
-      { store: 'Drogasil', latest: 21.99, min: 21.99, max: 23.69 },
+      {
+        store: 'Drogaria Venancio',
+        latest: 23.59,
+        min: 23.59,
+        max: 23.59,
+        url: null,
+      },
+      {
+        store: 'Drogasil',
+        latest: 21.99,
+        min: 21.99,
+        max: 23.69,
+        url: 'https://www.drogasil.com.br/gel-dental-colgate-baby-50g-62451.html',
+      },
     ]);
+  });
+
+  test('each store keeps the page url of its most recent priced row', () => {
+    const summary = buildHistory([
+      priceRow({ store: 'A', url: 'https://a.test/old' }),
+      priceRow({ store: 'A', url: 'https://a.test/new' }),
+      priceRow({ store: 'A', url: '' }),
+    ]).summary;
+    expect(summary[0].url).toBe('https://a.test/new');
   });
 
   test('older rows without a Brasilia timestamp fall back to the UTC date', () => {

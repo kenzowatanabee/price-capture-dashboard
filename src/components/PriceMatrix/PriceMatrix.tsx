@@ -1,5 +1,5 @@
 import { ProductThumb } from 'components/ProductThumb/ProductThumb';
-import { type FC, useMemo, useState } from 'react';
+import { type FC, type ReactNode, useMemo, useState } from 'react';
 import type { PriceRow } from 'services/prices';
 import { discount, formatAmount, formatPct, formatPremium } from 'utils/format';
 import {
@@ -8,6 +8,7 @@ import {
   premiumStep,
   reasonLabel,
 } from 'utils/insights';
+import { pageUrl } from 'utils/links';
 import { matchesSku } from 'utils/search';
 
 import styles from './PriceMatrix.module.scss';
@@ -30,6 +31,26 @@ const LEGEND_STEPS = [
 const tooltip = (row: PriceRow) =>
   [row.foundName, row.message].filter(Boolean).join('\n');
 
+/** Links the content to the store's own product page, so a price can be checked at its source. */
+const StoreLink: FC<{ row: PriceRow; children: ReactNode }> = ({
+  row,
+  children,
+}) => {
+  const href = pageUrl(row.url);
+  if (!href) return <>{children}</>;
+  return (
+    <a
+      className={styles.link}
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={`${row.store}: ${typeof children === 'string' ? children : ''} (opens the store page)`}
+    >
+      {children}
+    </a>
+  );
+};
+
 const Cell: FC<{ row: PriceRow | undefined; min: number | null }> = ({
   row,
   min,
@@ -38,7 +59,7 @@ const Cell: FC<{ row: PriceRow | undefined; min: number | null }> = ({
   if (row.status !== 'Success' || row.price == null) {
     return (
       <td className={`${styles.cell} ${styles.missing}`} title={tooltip(row)}>
-        {reasonLabel(row)}
+        <StoreLink row={row}>{reasonLabel(row)}</StoreLink>
       </td>
     );
   }
@@ -59,7 +80,9 @@ const Cell: FC<{ row: PriceRow | undefined; min: number | null }> = ({
             !
           </span>
         )}
-        <span className={styles.price}>{formatAmount(row.price)}</span>
+        <span className={styles.price}>
+          <StoreLink row={row}>{formatAmount(row.price)}</StoreLink>
+        </span>
         {off != null && <span className={styles.promo}>−{formatPct(off)}</span>}
       </div>
       <div className={styles.sub}>
@@ -246,7 +269,8 @@ export const PriceMatrix: FC<PriceMatrixProps> = ({
             (excluded from lowest and gap)
           </span>
           <span>
-            Hover a cell for the store&apos;s product name and details
+            Click a price to open that store&apos;s product page · hover a cell
+            for the store&apos;s product name
           </span>
         </div>
       </div>

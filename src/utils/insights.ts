@@ -177,6 +177,8 @@ export interface StoreSummary {
   latest: number | null;
   min: number | null;
   max: number | null;
+  /** The store's product page, from its most recent priced row that has one. */
+  url: string | null;
 }
 
 export interface HistorySeries {
@@ -194,7 +196,9 @@ export const buildHistory = (rows: PriceRow[]): HistorySeries => {
   const priced = rows.filter(isPriced);
   const stores = [...new Set(priced.map((r) => r.store))].sort(byText);
   const days = new Map<string, HistoryPoint>();
+  const urls = new Map<string, string>();
   for (const row of priced) {
+    if (row.url) urls.set(row.store, row.url);
     const date = rowDate(row);
     const point = days.get(date) ?? ({ date } as HistoryPoint);
     point[row.store] = row.price; // later rows of the same day overwrite earlier ones
@@ -213,6 +217,7 @@ export const buildHistory = (rows: PriceRow[]): HistorySeries => {
       latest: values.length ? values[values.length - 1] : null,
       min: values.length ? Math.min(...values) : null,
       max: values.length ? Math.max(...values) : null,
+      url: urls.get(store) ?? null,
     };
   });
   return { stores, points, summary };

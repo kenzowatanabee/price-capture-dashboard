@@ -20,13 +20,7 @@ describe('HistoryChart', () => {
       [...rows[i].querySelectorAll('span')].map((s) =>
         s.textContent?.replace(/\s/g, ' '),
       );
-    expect(cells(0)).toEqual([
-      '',
-      'Drogasil',
-      'R$ 21,99',
-      'R$ 21,99',
-      'R$ 23,69',
-    ]);
+    expect(cells(0)).toEqual(['', 'Drogasil', '21,99', '21,99', '23,69']);
     expect(cells(1)[1]).toBe('Drogaria Venancio');
     expect(rows[0]).toHaveAttribute('aria-pressed', 'true');
     expect(rows[1]).toHaveAttribute('aria-pressed', 'false');
@@ -86,5 +80,17 @@ describe('HistoryChart', () => {
   test('short dates', () => {
     expect(shortDate('2026-11-20')).toBe('20 Nov');
     expect(shortDate('weird')).toBe('weird');
+  });
+});
+
+describe('HistoryChart store links', () => {
+  test('a store with a known page gets a link to it', () => {
+    render(<HistoryChart series={series} slots={initialSlots(['Drogasil'])} />);
+    const link = screen.getByRole('link', {
+      name: 'Open the product page at Drogasil',
+    });
+    expect(link).toHaveAttribute('href', expect.stringContaining('62451'));
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(screen.getAllByRole('link')).toHaveLength(1); // Venancio has no url
   });
 });

@@ -117,3 +117,40 @@ describe('PriceMatrix', () => {
     expect(onSelectSku).toHaveBeenCalledWith('7509546060781');
   });
 });
+
+describe('PriceMatrix links to the store pages', () => {
+  const rows = [
+    priceRow({ store: 'A', price: 10, url: 'https://a.test/p/1' }),
+    priceRow({ store: 'B', price: 12, url: '' }),
+    priceRow({
+      store: 'C',
+      status: 'Not Found',
+      price: null,
+      code: 'OUT_OF_STOCK',
+      message: 'OUT_OF_STOCK: x',
+      url: 'https://c.test/p/1',
+    }),
+    priceRow({ store: 'D', price: 11, url: 'javascript:alert(1)' }),
+  ];
+
+  test('a price opens that store’s product page in a new tab', () => {
+    render(<PriceMatrix matrix={buildMatrix(rows)} />);
+    const link = screen.getByRole('link', { name: /^A: 10,00/ });
+    expect(link).toHaveAttribute('href', 'https://a.test/p/1');
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noreferrer');
+  });
+
+  test('a missing price links too, so the reason can be checked', () => {
+    render(<PriceMatrix matrix={buildMatrix(rows)} />);
+    expect(screen.getAllByRole('link', { name: /^C:/ })[0]).toHaveAttribute(
+      'href',
+      'https://c.test/p/1',
+    );
+  });
+
+  test('no link without a usable http(s) url', () => {
+    render(<PriceMatrix matrix={buildMatrix(rows)} />);
+    expect(screen.getAllByRole('link')).toHaveLength(2);
+  });
+});

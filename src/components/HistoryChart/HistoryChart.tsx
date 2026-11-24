@@ -14,8 +14,9 @@ import {
   SERIES_COLORS,
   type SlotMap,
 } from 'utils/colors';
-import { formatBRL, shortDate } from 'utils/format';
+import { formatAmount, formatBRL, shortDate } from 'utils/format';
 import type { HistoryPoint, HistorySeries } from 'utils/insights';
+import { pageUrl } from 'utils/links';
 
 import styles from './HistoryChart.module.scss';
 
@@ -257,15 +258,21 @@ export const HistoryChart: FC<HistoryChartProps> = ({
         <div className={styles.cardTop}>
           <div>
             <h2>Stores</h2>
-            <p>Cheapest first · click to highlight (up to {MAX_HIGHLIGHTED})</p>
+            <p>
+              Prices in R$ · cheapest first · click to highlight (up to{' '}
+              {MAX_HIGHLIGHTED})
+            </p>
           </div>
         </div>
-        <div className={styles.storeHead} aria-hidden="true">
-          <span />
-          <span>Store</span>
-          <span className={styles.num}>Latest</span>
-          <span className={styles.num}>Lowest</span>
-          <span className={styles.num}>Highest</span>
+        <div className={styles.headRow} aria-hidden="true">
+          <div className={styles.storeHead}>
+            <span />
+            <span>Store</span>
+            <span className={styles.num}>Latest</span>
+            <span className={styles.num}>Lowest</span>
+            <span className={styles.num}>Highest</span>
+          </div>
+          <span className={styles.open} />
         </div>
         <ul className={styles.stores} aria-label="Price summary">
           {stores.map((s) => {
@@ -291,10 +298,24 @@ export const HistoryChart: FC<HistoryChartProps> = ({
                   <span className={styles.storeName} title={s.store}>
                     {s.store}
                   </span>
-                  <span className={styles.num}>{formatBRL(s.latest)}</span>
-                  <span className={styles.num}>{formatBRL(s.min)}</span>
-                  <span className={styles.num}>{formatBRL(s.max)}</span>
+                  <span className={styles.num}>{formatAmount(s.latest)}</span>
+                  <span className={styles.num}>{formatAmount(s.min)}</span>
+                  <span className={styles.num}>{formatAmount(s.max)}</span>
                 </button>
+                {pageUrl(s.url) ? (
+                  <a
+                    className={styles.open}
+                    href={pageUrl(s.url)!}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`Open the product page at ${s.store}`}
+                    title={`Open the product page at ${s.store}`}
+                  >
+                    ↗
+                  </a>
+                ) : (
+                  <span className={styles.open} />
+                )}
               </li>
             );
           })}

@@ -1,7 +1,7 @@
 .HistoryChart {
   display: grid;
   gap: 20px;
-  grid-template-columns: minmax(0, 1fr) minmax(400px, 440px);
+  grid-template-columns: minmax(0, 1fr) minmax(430px, 470px);
 
   @media (max-width: 980px) {
     grid-template-columns: minmax(0, 1fr);
@@ -90,12 +90,40 @@
   padding: 0;
 }
 
+.stores li,
+.headRow {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.headRow .storeHead {
+  flex: 1;
+  min-width: 0;
+}
+
+.open {
+  border-radius: 6px;
+  color: var(--text-2);
+  flex: none;
+  font-size: 13px;
+  line-height: 28px;
+  text-align: center;
+  text-decoration: none;
+  width: 28px;
+
+  &:hover {
+    background: var(--hover);
+    color: var(--blue-600);
+  }
+}
+
 .storeHead,
 .store {
   align-items: center;
   display: grid;
   gap: 8px;
-  grid-template-columns: 22px minmax(0, 1fr) 64px 64px 64px;
+  grid-template-columns: 22px minmax(0, 1fr) 52px 52px 52px;
 }
 
 .storeHead {
@@ -106,6 +134,8 @@
 }
 
 .store {
+  flex: 1;
+  min-width: 0;
   background: none;
   border: none;
   border-radius: 6px;

@@ -16,12 +16,13 @@ A Domo custom app for the prices collected by [price-capture](https://github.com
   - A badge shows the discount against the store's own list price.
   - A price that cannot be bought is struck through, and is left out of the lowest price and the price gap.
   - Search by words in any order or by EAN (accents ignored, e.g. `total 90g`), sort by the biggest price gap, and click a SKU to open its history.
+  - Every price is a link to that store's own product page, so it can be checked at the source. Missing prices (e.g. out of stock) link too when the store has a page for the product.
   - Each SKU shows a product picture, loaded from the store's own site (`image_url`). When a store sent none, or it fails to load, a neutral tile takes its place. Hover a picture for a large preview.
 - **Price history:** one step line per store, one point per day (the last price of that day).
   - A product header shows the picture, the lowest price of the latest run and a link to that store's page. Its search box finds another product by name or EAN.
   - Up to 3 stores are highlighted in colour and the rest stay grey. Click a store in the side list to swap.
   - Hover for every store's price on that day, or switch to the table view.
-  - The side list shows each store's latest, lowest and highest price.
+  - The side list shows each store's latest, lowest and highest price, with a link to the store's product page.
 
 ## Data
 

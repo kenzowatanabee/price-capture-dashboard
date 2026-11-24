@@ -111,6 +111,7 @@ export const babyHistory: PriceRow[] = [
   priceRow({
     store: 'Drogasil',
     price: 21.99,
+    url: 'https://www.drogasil.com.br/gel-dental-colgate-baby-50g-62451.html',
     fetchedAtBrt: '2026-11-20 12:01:00',
   }),
   priceRow({
