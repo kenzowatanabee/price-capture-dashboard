@@ -1,3 +1,41 @@
+# Price Capture Dashboard
+
+A Domo custom app for the prices collected by [price-capture](https://github.com/kenzowatanabee/price-capture): the latest run at a glance, a store × SKU price matrix, and each SKU's price over time.
+
+## Screens
+
+- **Overview:** the latest run's share of SKUs with a price, the share that can actually be bought (VTEX cart check), errors, and per-store health with the main reasons a price is missing (`NOT_LISTED`, `OUT_OF_STOCK`, ...).
+- **Price matrix:** each SKU's latest price at every store.
+  - The cheapest store is highlighted, and a badge shows the discount against the store's own list price.
+  - A price that cannot be bought is struck through, and is left out of the cheapest store, the min/max and the spread.
+  - Click a SKU to open its history.
+- **Price history:** one line per store, one point per day (the last price of that day), plus each store's latest, lowest and highest price.
+
+## Data
+
+The app reads the `PRICE_TRACKER` dataset through Domo's SQL API, under the alias `prices` declared in `public/manifest.json`. **Before the first run, replace `REPLACE_WITH_PRICE_TRACKER_DATASET_ID` in `public/manifest.json` with the dataset's ID**, the one in the dataset's Domo URL.
+
+- The latest run is the most recent `run_id`. Older rows without a `run_id` still appear in the history.
+- Domo returns every value as text. `src/services/prices.ts` turns the rows into typed values.
+- Queries are filtered in Domo: the app never downloads the whole dataset.
+
+## Development
+
+```bash
+pnpm install
+domo login                 # ryuu CLI, once per Domo instance
+pnpm start                 # dev server, proxies data calls to your Domo instance
+pnpm test                  # unit and component tests (a fake Domo, no network)
+pnpm storybook             # every screen with sample data, no Domo needed
+pnpm upload                # build and publish to Domo
+```
+
+`pnpm start` and `pnpm upload` need Domo's global CLIs (`@domoinc/da` and `ryuu`), as described in the template notes below.
+
+Code layout: `services/` (Domo queries), `utils/insights.ts` (matrix, overview and history logic), `reducers/prices/` (state), `components/` (screens), and `fixtures/` (sample data for tests and stories).
+
+---
+
 > ### This project was bootstrapped with [Vite](https://vitejs.dev/).
 
 # DomoApps Advanced App Platform Template
