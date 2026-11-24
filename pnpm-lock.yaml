@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@domoinc/query':
+        specifier: 3.0.0
+        version: 3.0.0
       '@domoinc/toolkit':
         specifier: ^2.4.0
         version: 2.4.0
@@ -284,6 +287,9 @@ packages:
   '@csstools/css-tokenizer@3.0.4':
     resolution: {integrity: sha512-Vd/9EVDiu6PPJt9yAh6roZP6El1xHrdvIVGjyBsHR0RYwNHgL7FJPyIIW4fANJNG6FtyZfvlRPpFI4ZM/lubvw==}
     engines: {node: '>=18'}
+
+  '@domoinc/query@3.0.0':
+    resolution: {integrity: sha512-JXKJbDYBHAZfdb7VEkq1U5GMyrO2NK+1+WpQR1qw3ynbmT7YKbgrAoEmGDnEa4LkI02hi5dc7fEWGng3yJSypA==}
 
   '@domoinc/ryuu-proxy@5.1.2':
     resolution: {integrity: sha512-t2fqErTD+RF1ubKgBrkjWM1ljp51AyjVMFFqOcIRxsuK0iMr8rQwd8tvAaIcI9UgKMnFInJb/hyXTE+s7eB7YQ==}
@@ -4047,6 +4053,8 @@ snapshots:
       '@csstools/css-tokenizer': 3.0.4
 
   '@csstools/css-tokenizer@3.0.4': {}
+
+  '@domoinc/query@3.0.0': {}
 
   '@domoinc/ryuu-proxy@5.1.2(express@4.21.2)':
     dependencies:

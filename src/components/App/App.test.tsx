@@ -42,7 +42,9 @@ describe('App (with a fake Domo)', () => {
     expect(screen.getByRole('combobox', { name: 'SKU' })).toHaveValue(
       '7509546060781',
     );
-    expect(domo.queries.filter((q) => q.includes('WHERE ean'))).toHaveLength(1);
+    expect(
+      domo.queries.filter((q) => q.where?.[0]?.column === 'ean'),
+    ).toHaveLength(1);
   });
 
   test('switching SKU in the history tab loads that SKU', async () => {
@@ -58,7 +60,7 @@ describe('App (with a fake Domo)', () => {
       await screen.findByText('No prices recorded for this SKU yet.'),
     ).toBeInTheDocument();
     expect(
-      domo.queries.some((q) => q.includes("WHERE ean = '7509546651040'")),
+      domo.queries.some((q) => q.where?.[0]?.equals === '7509546651040'),
     ).toBe(true);
   });
 

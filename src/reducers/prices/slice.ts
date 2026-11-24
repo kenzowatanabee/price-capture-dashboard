@@ -1,10 +1,10 @@
+import type { QueryFn } from 'services/domo';
 import {
   fetchHistory,
   fetchLatestRunId,
   fetchRun,
   type PriceRow,
 } from 'services/prices';
-import type { QueryFn } from 'services/sql';
 
 import { createAppSlice } from '../createAppSlice';
 

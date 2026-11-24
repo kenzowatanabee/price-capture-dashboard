@@ -1,4 +1,4 @@
-import { PRICES_ALIAS, type QueryFn, type SqlRow, sqlString } from './sql';
+import type { DataRow, DataValue, QueryFn } from './domo';
 
 /** One row of the PRICE_TRACKER dataset (one store x one SKU in one scraper run). */
 export interface PriceRow {
@@ -26,17 +26,21 @@ export interface PriceRow {
   fetchedAtBrt: string;
 }
 
-export const parseNumber = (value?: string | null): number | null => {
+const text = (value: DataValue | undefined): string =>
+  value == null ? '' : String(value);
+
+export const parseNumber = (value?: DataValue): number | null => {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
   const text = (value ?? '').trim();
   if (!text) return null;
   const number = Number(text);
   return Number.isFinite(number) ? number : null;
 };
 
-export const parseAvailable = (value?: string | null): boolean | null => {
-  const text = (value ?? '').trim().toLowerCase();
-  if (text === 'true') return true;
-  if (text === 'false') return false;
+export const parseAvailable = (value?: DataValue): boolean | null => {
+  const flag = text(value).trim().toLowerCase();
+  if (flag === 'true') return true;
+  if (flag === 'false') return false;
   return null;
 };
 
@@ -45,37 +49,51 @@ export const reasonCode = (message: string): string | null => {
   return match ? match[1] : null;
 };
 
-export const toPriceRow = (row: SqlRow): PriceRow => ({
-  runId: row.run_id ?? '',
-  ean: row.ean ?? '',
-  descSku: row.desc_sku ?? '',
-  store: row.store ?? '',
-  status: row.status ?? '',
+export const toPriceRow = (row: DataRow): PriceRow => ({
+  runId: text(row.run_id),
+  ean: text(row.ean),
+  descSku: text(row.desc_sku),
+  store: text(row.store),
+  status: text(row.status),
   price: parseNumber(row.price_brl),
   listPrice: parseNumber(row.list_price),
-  foundName: row.found_name ?? '',
-  message: row.message ?? '',
-  code: reasonCode(row.message ?? ''),
+  foundName: text(row.found_name),
+  message: text(row.message),
+  code: reasonCode(text(row.message)),
   available: parseAvailable(row.available),
-  seller: row.seller ?? '',
-  url: row.url ?? '',
-  fetchedAt: row.fetched_at ?? '',
-  fetchedAtBrt: row.fetched_at_brt ?? '',
+  seller: text(row.seller),
+  url: text(row.url),
+  fetchedAt: text(row.fetched_at),
+  fetchedAtBrt: text(row.fetched_at_brt),
 });
 
-const COLUMNS =
-  'run_id, ean, desc_sku, store, status, price_brl, list_price, found_name, message, available, seller, url, fetched_at, fetched_at_brt';
+const COLUMNS = [
+  'run_id',
+  'ean',
+  'desc_sku',
+  'store',
+  'status',
+  'price_brl',
+  'list_price',
+  'found_name',
+  'message',
+  'available',
+  'seller',
+  'url',
+  'fetched_at',
+  'fetched_at_brt',
+];
 
-/** The run_id of the most recent scraper run (rows from before run_id existed are ignored). */
+/** The run_id of the most recent scraper run (the newest row's run). */
 export const fetchLatestRunId = async (
   query: QueryFn,
 ): Promise<string | null> => {
-  const rows = await query(
-    `SELECT run_id, MAX(fetched_at) AS last_fetch FROM ${PRICES_ALIAS} ` +
-      `WHERE run_id IS NOT NULL AND run_id <> '' ` +
-      `GROUP BY run_id ORDER BY last_fetch DESC LIMIT 1`,
-  );
-  return rows[0]?.run_id || null;
+  const rows = await query({
+    select: ['run_id', 'fetched_at'],
+    orderBy: { column: 'fetched_at', direction: 'descending' },
+    limit: 1,
+  });
+  return text(rows[0]?.run_id) || null;
 };
 
 /** Every row of one scraper run. */
@@ -84,9 +102,10 @@ export const fetchRun = async (
   runId: string,
 ): Promise<PriceRow[]> =>
   (
-    await query(
-      `SELECT ${COLUMNS} FROM ${PRICES_ALIAS} WHERE run_id = ${sqlString(runId)}`,
-    )
+    await query({
+      select: COLUMNS,
+      where: [{ column: 'run_id', equals: runId }],
+    })
   ).map(toPriceRow);
 
 /** Every row ever recorded for one EAN, oldest first. */
@@ -98,8 +117,10 @@ export const fetchHistory = async (
     throw new Error(`Invalid EAN: ${ean}`);
   }
   return (
-    await query(
-      `SELECT ${COLUMNS} FROM ${PRICES_ALIAS} WHERE ean = ${sqlString(ean)} ORDER BY fetched_at`,
-    )
+    await query({
+      select: COLUMNS,
+      where: [{ column: 'ean', equals: ean }],
+      orderBy: { column: 'fetched_at', direction: 'ascending' },
+    })
   ).map(toPriceRow);
 };

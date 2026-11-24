@@ -9,7 +9,7 @@ import {
 } from '@reduxjs/toolkit';
 //-- importRef
 import { useDispatch, useSelector } from 'react-redux';
-import { domoQuery, PRICES_ALIAS, type QueryFn } from 'services/sql';
+import { domoQuery, PRICES_ALIAS, type QueryFn } from 'services/domo';
 
 import PricesSlice, { type ThunkExtra } from './prices/slice';
 
