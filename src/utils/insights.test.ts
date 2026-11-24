@@ -25,10 +25,11 @@ describe('price matrix', () => {
     ]);
   });
 
-  test('min, max, spread and the cheapest stores use priced rows only', () => {
+  test('min, max, spread and the cheapest stores use purchasable priced rows only', () => {
     const baby = matrix.rows[0];
-    expect([baby.min, baby.max]).toEqual([21.99, 31.9]);
-    expect(baby.spread).toBeCloseTo((31.9 - 21.99) / 21.99);
+    // Indiana's 31.90 cannot be bought (cart check), so it does not set the range
+    expect([baby.min, baby.max]).toEqual([21.99, 23.59]);
+    expect(baby.spread).toBeCloseTo((23.59 - 21.99) / 21.99);
     expect(baby.cheapest).toEqual(['Drogaria São Paulo', 'Drogasil']); // a tie
     const luminous = matrix.rows[1];
     expect([luminous.min, luminous.max, luminous.cheapest]).toEqual([
@@ -37,6 +38,19 @@ describe('price matrix', () => {
       ['Drogaria Venancio'],
     ]);
     expect(luminous.cells['Farmácia Indiana']?.status).toBe('Not Found');
+  });
+
+  test('an unpurchasable price is never the cheapest', () => {
+    const m = buildMatrix([
+      priceRow({ store: 'A', price: 5, available: false }),
+      priceRow({ store: 'B', price: 9, available: true }),
+      priceRow({ store: 'C', price: 7 }), // no cart check (RD): counts
+    ]);
+    expect([m.rows[0].min, m.rows[0].max, m.rows[0].cheapest]).toEqual([
+      7,
+      9,
+      ['C'],
+    ]);
   });
 
   test('a SKU with no price anywhere has no stats', () => {

@@ -1,0 +1,102 @@
+.PriceMatrix {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.controls {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  input[type='search'] {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font: inherit;
+    min-width: 260px;
+    padding: 6px 10px;
+  }
+}
+
+.count {
+  color: var(--muted);
+  margin-left: auto;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  max-height: calc(100vh - 210px);
+  overflow: auto;
+
+  thead th {
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+}
+
+.sku {
+  max-width: 340px;
+  min-width: 240px;
+  white-space: normal;
+
+  button {
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    font: inherit;
+    padding: 0;
+    text-align: left;
+  }
+
+  .ean {
+    color: var(--muted);
+    font-size: 12px;
+  }
+}
+
+.cell {
+  text-align: right;
+}
+
+.cheapest {
+  background: var(--good-bg);
+  color: var(--good);
+  font-weight: 600;
+}
+
+.notPurchasable {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.missing {
+  color: var(--muted);
+}
+
+.badge {
+  border-radius: 10px;
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 6px;
+  padding: 0 6px;
+}
+
+.discount {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+
+.legend {
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12px;
+  gap: 16px;
+}

@@ -3,27 +3,39 @@
 
 import {
   type Action,
+  combineReducers,
   configureStore,
   type ThunkAction,
 } from '@reduxjs/toolkit';
 //-- importRef
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { domoQuery, PRICES_ALIAS, type QueryFn } from 'services/sql';
 
-import CounterSlice from './counter/slice';
+import PricesSlice, { type ThunkExtra } from './prices/slice';
 
-export const store = configureStore({
-  reducer: {
-    counter: CounterSlice,
-    //-- reducerRef
-  },
+const rootReducer = combineReducers({
+  prices: PricesSlice,
+  //-- reducerRef
 });
 
-export type RootState = ReturnType<typeof store.getState>;
+/** Builds a store; tests pass a fake query instead of Domo's SQL API. */
+export const makeStore = (query: QueryFn = domoQuery(PRICES_ALIAS)) =>
+  configureStore({
+    reducer: rootReducer,
+    middleware: (getDefault) =>
+      getDefault({ thunk: { extraArgument: { query } satisfies ThunkExtra } }),
+  });
+
+export const store = makeStore();
+
+export type AppStore = ReturnType<typeof makeStore>;
+export type RootState = ReturnType<typeof rootReducer>;
 export type AppThunk<ReturnType = void> = ThunkAction<
   ReturnType,
   RootState,
   unknown,
   Action<string>
 >;
-export type AppDispatch = typeof store.dispatch;
+export type AppDispatch = AppStore['dispatch'];
 export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppSelector = useSelector.withTypes<RootState>();

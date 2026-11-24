@@ -1,0 +1,23 @@
+.PriceHistory {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  select {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font: inherit;
+    max-width: 640px;
+    padding: 6px 10px;
+  }
+}
+
+.status {
+  color: var(--muted);
+  padding: 24px;
+  text-align: center;
+}
+
+.error {
+  color: var(--bad);
+}

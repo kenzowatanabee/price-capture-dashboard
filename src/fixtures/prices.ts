@@ -122,3 +122,37 @@ export const babyHistory: PriceRow[] = [
     fetchedAtBrt: '2026-11-20 12:02:00',
   }),
 ];
+
+/** The dataset row (all text, as Domo's SQL API returns it) behind a PriceRow. */
+export const toSqlRow = (row: PriceRow): Record<string, string> => ({
+  run_id: row.runId,
+  ean: row.ean,
+  desc_sku: row.descSku,
+  store: row.store,
+  status: row.status,
+  price_brl: row.price == null ? '' : String(row.price),
+  list_price: row.listPrice == null ? '' : String(row.listPrice),
+  found_name: row.foundName,
+  message: row.message,
+  available: row.available == null ? '' : String(row.available),
+  seller: row.seller,
+  url: row.url,
+  fetched_at: row.fetchedAt,
+  fetched_at_brt: row.fetchedAtBrt,
+});
+
+/** A fake Domo: answers the app's queries from the fixtures above. */
+export const fakeDomo = (overrides: { fail?: boolean } = {}) => {
+  const queries: string[] = [];
+  const query = async (sql: string) => {
+    queries.push(sql);
+    if (overrides.fail) throw new Error('Domo is unreachable');
+    if (sql.includes('GROUP BY run_id'))
+      return [{ run_id: 'gh-1001-1', last_fetch: '2026-11-20 15:03:12' }];
+    if (sql.includes('WHERE run_id')) return latestRun.map(toSqlRow);
+    if (sql.includes("WHERE ean = '7509546060781'"))
+      return babyHistory.map(toSqlRow);
+    return [];
+  };
+  return { query, queries };
+};

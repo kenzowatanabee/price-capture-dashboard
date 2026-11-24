@@ -3,8 +3,9 @@ import type { PriceRow } from 'services/prices';
 const byText = (a: string, b: string) => a.localeCompare(b, 'pt-BR');
 const isPriced = (row: PriceRow): boolean =>
   row.status === 'Success' && row.price != null;
-const pricedCell = (row: PriceRow | undefined): row is PriceRow =>
-  row != null && isPriced(row);
+/** Priced and not known to be unpurchasable: the offers a customer can actually compare. */
+const comparableCell = (row: PriceRow | undefined): row is PriceRow =>
+  row != null && isPriced(row) && row.available !== false;
 
 // ---------- price matrix: SKU x store, for one run ----------
 
@@ -14,9 +15,9 @@ export interface MatrixRow {
   cells: Record<string, PriceRow | undefined>;
   min: number | null;
   max: number | null;
-  /** (max - min) / min across stores with a price. */
+  /** (max - min) / min across stores with a purchasable price. */
   spread: number | null;
-  /** Stores at the minimum price. */
+  /** Stores at the minimum purchasable price. */
   cheapest: string[];
 }
 
@@ -44,7 +45,7 @@ export const buildMatrix = (rows: PriceRow[]): Matrix => {
     bySku.set(row.ean, entry);
   }
   for (const entry of bySku.values()) {
-    const priced = Object.values(entry.cells).filter(pricedCell);
+    const priced = Object.values(entry.cells).filter(comparableCell);
     if (priced.length) {
       const prices = priced.map((r) => r.price as number);
       entry.min = Math.min(...prices);
