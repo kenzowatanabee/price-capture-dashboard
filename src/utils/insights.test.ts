@@ -12,7 +12,10 @@ import {
 import {
   buildHistory,
   buildMatrix,
+  cellPremium,
   computeOverview,
+  premiumStep,
+  reasonLabel,
   rowDate,
   storeComparison,
 } from './insights';
@@ -195,5 +198,39 @@ describe('premium and freshness formatting', () => {
     expect(formatAge(0.2)).toBe('12 min ago');
     expect(formatAge(3.4)).toBe('3 h ago');
     expect(formatAge(50)).toBe('2 days ago');
+  });
+});
+
+describe('matrix cell helpers', () => {
+  test('premium over the lowest purchasable price', () => {
+    expect(cellPremium(priceRow({ price: 11 }), 10)).toBeCloseTo(0.1);
+    expect(
+      cellPremium(priceRow({ price: 11, available: false }), 10),
+    ).toBeNull();
+    expect(
+      cellPremium(priceRow({ status: 'Not Found', price: null }), 10),
+    ).toBeNull();
+    expect(cellPremium(undefined, 10)).toBeNull();
+  });
+
+  test('tint steps', () => {
+    expect([0, 0.03, 0.1, 0.2, 0.6, null].map(premiumStep)).toEqual([
+      0,
+      1,
+      2,
+      3,
+      4,
+      null,
+    ]);
+  });
+
+  test('plain-language reasons', () => {
+    expect(reasonLabel(priceRow({ code: 'NOT_LISTED' }))).toBe('Not listed');
+    expect(reasonLabel(priceRow({ code: 'WHATEVER', status: 'Error' }))).toBe(
+      'Error',
+    );
+    expect(reasonLabel(priceRow({ code: null, status: 'Not Found' }))).toBe(
+      'No price',
+    );
   });
 });

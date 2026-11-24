@@ -286,3 +286,49 @@ export const storeComparison = (rows: PriceRow[]): StoreComparison[] => {
       return a.avgPremium - b.avgPremium || byText(a.store, b.store);
     });
 };
+
+// ---------- matrix cell helpers ----------
+
+/** Price premium of a cell over the SKU's lowest purchasable price, or null when it has none. */
+export const cellPremium = (
+  row: PriceRow | undefined,
+  min: number | null,
+): number | null =>
+  row != null &&
+  isPriced(row) &&
+  row.available !== false &&
+  min != null &&
+  min > 0
+    ? (row.price as number) / min - 1
+    : null;
+
+/** Tint step 0-4 for a premium: 0 = lowest, then <=5%, <=15%, <=30%, >30%. */
+export const premiumStep = (premium: number | null): number | null => {
+  if (premium == null) return null;
+  if (premium < 0.0005) return 0;
+  if (premium <= 0.05) return 1;
+  if (premium <= 0.15) return 2;
+  if (premium <= 0.3) return 3;
+  return 4;
+};
+
+const REASONS: Record<string, string> = {
+  NOT_LISTED: 'Not listed',
+  OUT_OF_STOCK: 'Out of stock',
+  NO_PRICE: 'No price',
+  ZERO_PRICE: 'Price 0',
+  NO_STATE: 'Page changed',
+  EAN_MISMATCH: 'Other product',
+  TIMEOUT: 'Timeout',
+  NETWORK: 'Network error',
+  HTTP_ERROR: 'Blocked',
+  BLOCKED: 'Blocked',
+  PARSE_ERROR: 'Unreadable',
+  SKIPPED: 'Store down',
+  CONFIG: 'Config error',
+};
+
+/** Short, plain-language reason for a cell without a usable price. */
+export const reasonLabel = (row: PriceRow): string =>
+  (row.code && REASONS[row.code]) ||
+  (row.status === 'Error' ? 'Error' : 'No price');

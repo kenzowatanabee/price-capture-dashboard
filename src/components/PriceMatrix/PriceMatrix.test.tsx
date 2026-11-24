@@ -6,36 +6,71 @@ import { describe, expect, test, vi } from 'vitest';
 
 import { PriceMatrix } from './PriceMatrix';
 
-const cellFor = (sku: string, store: string) => {
-  const table = screen.getByRole('table', { name: 'Price matrix' });
-  const headers = within(table)
+const table = () => screen.getByRole('table', { name: 'Price matrix' });
+
+const headers = () =>
+  within(table())
     .getAllByRole('columnheader')
     .map((h) => h.textContent);
-  const row = within(table)
+
+const cellFor = (sku: string, store: string) => {
+  const row = within(table())
     .getAllByRole('row')
     .find((r) => r.textContent?.includes(sku))!;
-  return within(row).getAllByRole('cell')[headers.indexOf(store)];
+  return within(row).getAllByRole('cell')[headers().indexOf(store)];
 };
 
 describe('PriceMatrix', () => {
-  test('prices, cheapest store, discount, unpurchasable and missing prices', () => {
+  test('the lowest price is marked by text, others show their premium and tint step', () => {
     render(<PriceMatrix matrix={buildMatrix(latestRun)} />);
-    const drogasil = cellFor('BABY', 'Drogasil');
-    expect(drogasil).toHaveTextContent(/R\$\s21,99/);
-    expect(drogasil).toHaveTextContent('−7%');
-    expect(drogasil.className).toMatch(/cheapest/);
-    expect(cellFor('LUMINOUS', 'Drogaria Venancio').className).toMatch(
-      /cheapest/,
-    );
-    expect(cellFor('BABY', 'Farmácia Indiana').className).toMatch(
-      /notPurchasable/,
-    );
+    const lowest = cellFor('LUMINOUS', 'Drogaria Venancio');
+    expect(lowest).toHaveTextContent('▼ Lowest');
+    expect(lowest).toHaveAttribute('data-step', '0');
+    const dsp = cellFor('LUMINOUS', 'Drogaria São Paulo'); // 10.19 vs 8.99
+    expect(dsp).toHaveTextContent('+13.3% vs lowest');
+    expect(dsp).toHaveAttribute('data-step', '2');
+    expect(cellFor('LUMINOUS', 'Drogasil')).toHaveAttribute('data-step', '4'); // +70%
+  });
+
+  test('promotion, unpurchasable and missing prices', () => {
+    render(<PriceMatrix matrix={buildMatrix(latestRun)} />);
+    expect(cellFor('BABY', 'Drogasil')).toHaveTextContent('−7%');
+    const indiana = cellFor('BABY', 'Farmácia Indiana');
+    expect(indiana).toHaveTextContent('not purchasable');
+    expect(indiana).not.toHaveAttribute('data-step');
     const missing = cellFor('LUMINOUS', 'Farmácia Indiana');
-    expect(missing).toHaveTextContent('NOT_LISTED');
+    expect(missing).toHaveTextContent('Not listed');
     expect(missing).toHaveAttribute(
       'title',
       expect.stringContaining('store returned no product'),
     );
+  });
+
+  test('store columns follow the given order, the rest alphabetically', () => {
+    render(
+      <PriceMatrix
+        matrix={buildMatrix(latestRun)}
+        storeOrder={['Drogaria Venancio', 'Drogasil']}
+      />,
+    );
+    expect(headers()).toEqual([
+      'SKU',
+      'Drogaria Venancio',
+      'Drogasil',
+      'Drogaria São Paulo',
+      'Farmácia Indiana',
+      'Price gap',
+    ]);
+  });
+
+  test('sort by biggest price gap', async () => {
+    render(<PriceMatrix matrix={buildMatrix(latestRun)} />);
+    await userEvent.selectOptions(
+      screen.getByRole('combobox', { name: 'Sort SKUs' }),
+      'spread',
+    );
+    const firstRow = within(table()).getAllByRole('row')[1];
+    expect(firstRow).toHaveTextContent('LUMINOUS'); // 70% gap vs 7%
   });
 
   test('search filters by description or EAN', async () => {
@@ -52,7 +87,7 @@ describe('PriceMatrix', () => {
       screen.getByRole('searchbox', { name: 'Search SKU' }),
       '7509546060781',
     );
-    expect(screen.getByText(/BABY/)).toBeInTheDocument();
+    expect(screen.getByText('1 of 2 SKUs')).toBeInTheDocument();
   });
 
   test('SKUs without any price are hidden by default and can be shown', async () => {

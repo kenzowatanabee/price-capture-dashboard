@@ -8,14 +8,27 @@
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 10px 18px;
 
-  input[type='search'] {
+  input[type='search'],
+  select {
+    background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 6px;
+    color: var(--text);
     font: inherit;
-    min-width: 260px;
     padding: 6px 10px;
+  }
+
+  input[type='search'] {
+    min-width: 260px;
+  }
+
+  label {
+    align-items: center;
+    color: var(--text-2);
+    display: inline-flex;
+    gap: 6px;
   }
 }
 
@@ -27,76 +40,187 @@
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  max-height: calc(100vh - 210px);
+  border-radius: 10px;
+  max-height: calc(100vh - 230px);
   overflow: auto;
+
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
 
   thead th {
     background: var(--surface);
+    border-bottom: 1px solid var(--axis);
     position: sticky;
     top: 0;
-    z-index: 1;
+    z-index: 2;
+  }
+
+  tbody tr:hover td {
+    box-shadow: inset 0 0 0 9999px var(--hover);
   }
 }
 
+// pinned SKU column
 .sku {
-  max-width: 340px;
-  min-width: 240px;
+  background: var(--surface);
+  border-right: 1px solid var(--grid);
+  left: 0;
+  max-width: 320px;
+  min-width: 230px;
+  position: sticky;
   white-space: normal;
+  z-index: 1;
 
   button {
     background: none;
     border: none;
-    color: var(--accent);
+    color: var(--text);
     cursor: pointer;
     font: inherit;
+    font-weight: 600;
     padding: 0;
     text-align: left;
+
+    &:hover {
+      color: var(--series-1);
+      text-decoration: underline;
+    }
   }
 
   .ean {
     color: var(--muted);
-    font-size: 12px;
+    font-size: 11px;
   }
 }
 
-.cell {
+thead .sku {
+  z-index: 3;
+}
+
+.num {
   text-align: right;
 }
 
-.cheapest {
-  background: var(--good-bg);
-  color: var(--good);
-  font-weight: 600;
+.cell {
+  min-width: 96px;
+  text-align: right;
+  vertical-align: top;
 }
 
-.notPurchasable {
-  color: var(--muted);
+.price {
+  font-variant-numeric: tabular-nums;
+}
+
+.sub {
+  color: var(--text-2);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  margin-top: 1px;
+}
+
+// premium over the lowest price: one hue, light -> darker
+.step0 .price {
+  font-weight: 700;
+}
+.step1 {
+  background: rgba(42, 120, 214, 0.07);
+}
+.step2 {
+  background: rgba(42, 120, 214, 0.15);
+}
+.step3 {
+  background: rgba(42, 120, 214, 0.25);
+}
+.step4 {
+  background: rgba(42, 120, 214, 0.38);
+}
+
+.notPurchasable .price {
+  color: var(--text-2);
   text-decoration: line-through;
 }
 
 .missing {
   color: var(--muted);
+  font-size: 12px;
 }
 
-.badge {
-  border-radius: 10px;
-  display: inline-block;
-  font-size: 11px;
+.promo {
+  border: 1px solid var(--axis);
+  border-radius: 8px;
+  color: var(--text-2);
+  font-size: 10px;
   font-weight: 600;
-  margin-left: 6px;
-  padding: 0 6px;
+  margin-left: 5px;
+  padding: 0 4px;
+  vertical-align: 1px;
 }
 
-.discount {
-  background: var(--warn-bg);
-  color: var(--warn);
+.warnIcon {
+  align-items: center;
+  background: var(--warning);
+  border-radius: 50%;
+  color: var(--text);
+  display: inline-flex;
+  font-size: 9px;
+  font-weight: 700;
+  height: 12px;
+  justify-content: center;
+  margin-right: 4px;
+  vertical-align: 1px;
+  width: 12px;
+}
+
+// spread column: value + a thin bar on a shared scale
+.spread {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.spreadTrack {
+  border-left: 1px solid var(--axis);
+  display: inline-block;
+  height: 6px;
+  width: 48px;
+}
+
+.spreadBar {
+  background: var(--series-1);
+  border-radius: 0 3px 3px 0;
+  display: block;
+  height: 6px;
 }
 
 .legend {
-  color: var(--muted);
+  align-items: center;
+  color: var(--text-2);
   display: flex;
   flex-wrap: wrap;
   font-size: 12px;
-  gap: 16px;
+  gap: 8px 18px;
+}
+
+.scale {
+  align-items: center;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.scaleStep {
+  align-items: center;
+  display: inline-flex;
+  gap: 4px;
+}
+
+.swatch {
+  border: 1px solid var(--grid);
+  border-radius: 2px;
+  display: inline-block;
+  height: 12px;
+  width: 18px;
 }

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { latestRun } from 'fixtures/prices';
-import { buildMatrix } from 'utils/insights';
+import { buildMatrix, storeComparison } from 'utils/insights';
 
 import { PriceMatrix } from './PriceMatrix';
 
@@ -16,5 +16,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const LatestRun: Story = {
-  args: { matrix: buildMatrix(latestRun) },
+  args: {
+    matrix: buildMatrix(latestRun),
+    storeOrder: storeComparison(latestRun).map((s) => s.store),
+  },
 };

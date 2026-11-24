@@ -70,7 +70,13 @@ export const App: FC = () => {
   } else if (tab === 'overview') {
     content = <Overview overview={overview} comparison={comparison} />;
   } else if (tab === 'matrix') {
-    content = <PriceMatrix matrix={matrix} onSelectSku={openHistory} />;
+    content = (
+      <PriceMatrix
+        matrix={matrix}
+        storeOrder={comparison.map((s) => s.store)}
+        onSelectSku={openHistory}
+      />
+    );
   } else {
     content = <PriceHistory latestRows={latest.rows} />;
   }
