@@ -67,6 +67,8 @@ export const fullRun: PriceRow[] = (() => {
             descSku,
             store,
             price,
+            // Placeholder host: Storybook shows the fallback tile for these.
+            imageUrl: `https://example.invalid/${ean}.png`,
             listPrice: promo ? Math.round(price * 1.12 * 100) / 100 : price,
             available: blocked ? false : true,
             message: blocked ? 'NOT_PURCHASABLE: cannotBeDelivered' : '',

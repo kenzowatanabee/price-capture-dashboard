@@ -67,6 +67,10 @@
             {
                "alias": "fetched_at_brt",
                "columnName": "fetched_at_brt"
+            },
+            {
+               "alias": "image_url",
+               "columnName": "image_url"
             }
          ]
       }

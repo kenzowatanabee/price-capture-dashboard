@@ -136,7 +136,13 @@ thead .sku {
 }
 
 .colSku {
-  width: 21%;
+  width: 23%;
+}
+
+.skuBody {
+  align-items: flex-start;
+  display: flex;
+  gap: 10px;
 }
 
 .colGap {

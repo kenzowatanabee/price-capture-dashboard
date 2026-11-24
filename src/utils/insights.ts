@@ -12,6 +12,8 @@ const comparableCell = (row: PriceRow | undefined): row is PriceRow =>
 export interface MatrixRow {
   ean: string;
   descSku: string;
+  /** A picture of the product: the first one any store sent, in store-name order. */
+  imageUrl: string | null;
   cells: Record<string, PriceRow | undefined>;
   min: number | null;
   max: number | null;
@@ -26,6 +28,12 @@ export interface Matrix {
   rows: MatrixRow[];
 }
 
+/** The picture to show for a SKU: the first one any store sent, in store-name order. */
+export const skuImage = (rows: (PriceRow | undefined)[]): string | null =>
+  rows
+    .filter((r): r is PriceRow => !!r?.imageUrl)
+    .sort((a, b) => byText(a.store, b.store))[0]?.imageUrl ?? null;
+
 export const buildMatrix = (rows: PriceRow[]): Matrix => {
   const stores = [...new Set(rows.map((r) => r.store))].sort(byText);
   const bySku = new Map<string, MatrixRow>();
@@ -35,6 +43,7 @@ export const buildMatrix = (rows: PriceRow[]): Matrix => {
       ({
         ean: row.ean,
         descSku: row.descSku,
+        imageUrl: null,
         cells: {},
         min: null,
         max: null,
@@ -45,6 +54,7 @@ export const buildMatrix = (rows: PriceRow[]): Matrix => {
     bySku.set(row.ean, entry);
   }
   for (const entry of bySku.values()) {
+    entry.imageUrl = skuImage(Object.values(entry.cells));
     const priced = Object.values(entry.cells).filter(comparableCell);
     if (priced.length) {
       const prices = priced.map((r) => r.price as number);

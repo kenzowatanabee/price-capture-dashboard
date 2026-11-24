@@ -16,6 +16,7 @@ export const priceRow = (overrides: Partial<PriceRow> = {}): PriceRow => ({
   available: null,
   seller: '',
   url: '',
+  imageUrl: '',
   fetchedAt: '2026-11-20 15:03:12',
   fetchedAtBrt: '2026-11-20 12:03:12',
   ...overrides,
@@ -138,6 +139,7 @@ export const toDataRow = (row: PriceRow): DataRow => ({
   available: row.available == null ? '' : String(row.available),
   seller: row.seller,
   url: row.url,
+  image_url: row.imageUrl,
   fetched_at: row.fetchedAt,
   fetched_at_brt: row.fetchedAtBrt,
 });

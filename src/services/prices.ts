@@ -20,6 +20,8 @@ export interface PriceRow {
   available: boolean | null;
   seller: string;
   url: string;
+  /** Product picture on the store's own site; empty when the store sent none. */
+  imageUrl: string;
   /** UTC timestamp (Domo converts it to the company time zone for display). */
   fetchedAt: string;
   /** Brasilia clock time, as text. */
@@ -63,6 +65,7 @@ export const toPriceRow = (row: DataRow): PriceRow => ({
   available: parseAvailable(row.available),
   seller: text(row.seller),
   url: text(row.url),
+  imageUrl: text(row.image_url),
   fetchedAt: text(row.fetched_at),
   fetchedAtBrt: text(row.fetched_at_brt),
 });
@@ -82,6 +85,7 @@ const COLUMNS = [
   'url',
   'fetched_at',
   'fetched_at_brt',
+  'image_url',
 ];
 
 /** The run_id of the most recent scraper run (the newest row's run). */

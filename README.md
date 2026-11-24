@@ -16,6 +16,7 @@ A Domo custom app for the prices collected by [price-capture](https://github.com
   - A badge shows the discount against the store's own list price.
   - A price that cannot be bought is struck through, and is left out of the lowest price and the price gap.
   - Search, sort by the biggest price gap, and click a SKU to open its history.
+  - Each SKU shows a product picture, loaded from the store's own site (`image_url`). When a store sent none, or it fails to load, a neutral tile takes its place.
 - **Price history:** one step line per store, one point per day (the last price of that day).
   - Up to 3 stores are highlighted in colour and the rest stay grey. Click a store in the side list to swap.
   - Hover for every store's price on that day, or switch to the table view.

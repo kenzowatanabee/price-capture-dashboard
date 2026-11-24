@@ -17,6 +17,7 @@ import {
   premiumStep,
   reasonLabel,
   rowDate,
+  skuImage,
   storeComparison,
 } from './insights';
 
@@ -232,5 +233,21 @@ describe('matrix cell helpers', () => {
     expect(reasonLabel(priceRow({ code: null, status: 'Not Found' }))).toBe(
       'No price',
     );
+  });
+});
+
+describe('skuImage', () => {
+  test('first picture any store sent, in store-name order', () => {
+    const rows = [
+      priceRow({ store: 'Zeta', imageUrl: 'https://z.test/1.jpg' }),
+      priceRow({ store: 'Alfa', imageUrl: '' }),
+      priceRow({ store: 'Beta', imageUrl: 'https://b.test/1.jpg' }),
+    ];
+    expect(skuImage(rows)).toBe('https://b.test/1.jpg');
+    expect(buildMatrix(rows).rows[0].imageUrl).toBe('https://b.test/1.jpg');
+  });
+
+  test('null when no store sent one', () => {
+    expect(skuImage([priceRow(), undefined])).toBeNull();
   });
 });

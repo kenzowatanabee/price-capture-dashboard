@@ -1,0 +1,16 @@
+.thumb {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: inline-block;
+  flex: none;
+  overflow: hidden;
+
+  img {
+    background: #ffffff;
+    display: block;
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
+  }
+}

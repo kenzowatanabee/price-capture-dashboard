@@ -1,9 +1,10 @@
+import { ProductThumb } from 'components/ProductThumb/ProductThumb';
 import { type FC, lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'reducers';
 import { loadHistory, selectHistory } from 'reducers/prices/slice';
 import type { PriceRow } from 'services/prices';
 import { defaultSlots, type SlotMap, toggleHighlight } from 'utils/colors';
-import { buildHistory } from 'utils/insights';
+import { buildHistory, skuImage } from 'utils/insights';
 
 import styles from './PriceHistory.module.scss';
 
@@ -43,6 +44,11 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
     }
   }, [dispatch, selected, history.ean]);
 
+  const image = useMemo(
+    () => skuImage(latestRows.filter((r) => r.ean === selected)),
+    [latestRows, selected],
+  );
+
   const series = useMemo(() => buildHistory(history.rows), [history.rows]);
 
   // highlight the cheapest stores of the latest day; a new SKU starts from its own cheapest
@@ -56,6 +62,7 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
   return (
     <div className={styles.PriceHistory}>
       <div className={styles.toolbar}>
+        <ProductThumb src={image} size={40} />
         <span aria-hidden="true">SKU</span>
         <select
           aria-label="SKU"

@@ -1,3 +1,4 @@
+import { ProductThumb } from 'components/ProductThumb/ProductThumb';
 import { type FC, useMemo, useState } from 'react';
 import type { PriceRow } from 'services/prices';
 import { discount, formatAmount, formatPct, formatPremium } from 'utils/format';
@@ -177,14 +178,22 @@ export const PriceMatrix: FC<PriceMatrixProps> = ({
               {rows.map((r) => (
                 <tr key={r.ean}>
                   <td className={styles.sku}>
-                    {onSelectSku ? (
-                      <button type="button" onClick={() => onSelectSku(r.ean)}>
-                        {r.descSku}
-                      </button>
-                    ) : (
-                      r.descSku
-                    )}
-                    <div className={styles.ean}>{r.ean}</div>
+                    <div className={styles.skuBody}>
+                      <ProductThumb src={r.imageUrl} />
+                      <div>
+                        {onSelectSku ? (
+                          <button
+                            type="button"
+                            onClick={() => onSelectSku(r.ean)}
+                          >
+                            {r.descSku}
+                          </button>
+                        ) : (
+                          r.descSku
+                        )}
+                        <div className={styles.ean}>{r.ean}</div>
+                      </div>
+                    </div>
                   </td>
                   {stores.map((store) => (
                     <Cell key={store} row={r.cells[store]} min={r.min} />
