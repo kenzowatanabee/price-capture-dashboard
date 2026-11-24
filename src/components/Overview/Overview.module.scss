@@ -1,53 +1,23 @@
 .Overview {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .kpis {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
-.kpi {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 14px 16px;
-
-  .label {
-    color: var(--muted);
-    font-size: 12px;
-  }
-
-  .value {
-    font-size: 26px;
-    font-weight: 600;
-    margin-top: 4px;
-  }
-
-  .detail {
-    color: var(--muted);
-    font-size: 12px;
-    margin-top: 2px;
-  }
+.cards {
+  align-items: start;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
 }
 
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow-x: auto;
-  padding: 8px 8px 0;
-}
-
-.codes {
+.reasons {
   color: var(--muted);
-  white-space: normal;
-}
-
-.bad {
-  color: var(--bad);
-  font-weight: 600;
+  font-size: 12px;
 }

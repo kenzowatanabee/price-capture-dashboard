@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event';
 import { fakeDomo } from 'fixtures/prices';
 import { Provider } from 'react-redux';
 import { makeStore } from 'reducers';
-import { describe, expect, test } from 'vitest';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 
 import { App } from './App';
 
@@ -17,13 +17,31 @@ const renderApp = (domo = fakeDomo()) => {
 };
 
 describe('App (with a fake Domo)', () => {
+  afterEach(() => vi.useRealTimers());
+
+  test('header says how fresh the data is', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(Date.UTC(2026, 10, 20, 18, 0))); // 3 h after the fixture run
+    renderApp();
+    expect(await screen.findByText('Updated 3 h ago')).toBeInTheDocument();
+  });
+
+  test('a run older than 30 hours is flagged', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(Date.UTC(2026, 10, 23, 15, 0))); // 3 days later
+    renderApp();
+    expect(
+      await screen.findByText('No new run for 3 days'),
+    ).toBeInTheDocument();
+  });
+
   test('loads the latest run and shows the overview', async () => {
     const domo = renderApp();
     expect(
-      await screen.findByText(/Latest run: 2026-11-20 12:03:12/),
+      await screen.findByText(/Latest run: 2026-11-20 12:03/),
     ).toHaveTextContent('gh-1001-1');
     expect(
-      screen.getByRole('table', { name: 'Store health' }),
+      screen.getByRole('region', { name: 'Price position' }),
     ).toBeInTheDocument();
     expect(domo.queries).toHaveLength(2); // latest run id, then that run's rows
   });

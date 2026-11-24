@@ -1,12 +1,20 @@
 import { babyHistory, latestRun, priceRow } from 'fixtures/prices';
 import { describe, expect, test } from 'vitest';
 
-import { discount, formatBRL, formatPct } from './format';
+import {
+  discount,
+  formatAge,
+  formatBRL,
+  formatPct,
+  formatPremium,
+  hoursSince,
+} from './format';
 import {
   buildHistory,
   buildMatrix,
   computeOverview,
   rowDate,
+  storeComparison,
 } from './insights';
 
 describe('price matrix', () => {
@@ -123,5 +131,69 @@ describe('formatting', () => {
     expect(discount(21.99, 23.69)).toBeCloseTo(1 - 21.99 / 23.69);
     expect(discount(21.99, 21.99)).toBeNull();
     expect(discount(21.99, null)).toBeNull();
+  });
+});
+
+describe('store comparison', () => {
+  test('average premium over the cheapest offer, wins and promotions per store', () => {
+    const c = storeComparison(latestRun);
+    // Baby gel (cheapest 21.99, Indiana unpurchasable so excluded) and Luminous (cheapest 8.99)
+    const byStore = Object.fromEntries(c.map((s) => [s.store, s]));
+    expect(byStore['Drogaria Venancio']).toMatchObject({
+      compared: 2,
+      wins: 1,
+    });
+    expect(byStore['Drogaria Venancio'].avgPremium).toBeCloseTo(
+      (23.59 / 21.99 - 1 + 0) / 2,
+    );
+    expect(byStore['Drogasil']).toMatchObject({ compared: 2, wins: 1 });
+    expect(byStore['Drogasil'].avgPremium).toBeCloseTo(
+      (0 + 15.29 / 8.99 - 1) / 2,
+    );
+    expect(byStore['Drogaria São Paulo'].avgPremium).toBeCloseTo(
+      (0 + 10.19 / 8.99 - 1) / 2,
+    );
+    // Indiana: its only price cannot be bought -> nothing compared
+    expect(byStore['Farmácia Indiana']).toMatchObject({
+      compared: 0,
+      wins: 0,
+      avgPremium: null,
+    });
+    // promotions: price below the store's own list price, among its purchasable prices
+    expect(byStore['Drogasil'].promoShare).toBe(1);
+    expect(byStore['Drogaria São Paulo'].promoShare).toBe(0.5);
+  });
+
+  test('sorted cheapest first, stores without comparisons last', () => {
+    const order = storeComparison(latestRun).map((s) => s.store);
+    expect(order[order.length - 1]).toBe('Farmácia Indiana');
+    expect(order[0]).toBe('Drogaria Venancio');
+  });
+
+  test('a SKU sold by only one store is not compared', () => {
+    const c = storeComparison([priceRow({ store: 'A', price: 9 })]);
+    expect(c[0]).toMatchObject({ compared: 0, wins: 0, avgPremium: null });
+  });
+});
+
+describe('premium and freshness formatting', () => {
+  test('premium', () => {
+    expect(formatPremium(0.0423)).toBe('+4.2%');
+    expect(formatPremium(0)).toBe('0%');
+    expect(formatPremium(-0.1)).toBe('−10.0%');
+    expect(formatPremium(null)).toBe('—');
+  });
+
+  test('hours since a UTC timestamp, in either Domo format', () => {
+    const now = new Date(Date.UTC(2026, 10, 20, 18, 3));
+    expect(hoursSince('2026-11-20T15:03:12', now)).toBeCloseTo(3);
+    expect(hoursSince('2026-11-20 15:03:12', now)).toBeCloseTo(3);
+    expect(hoursSince('not a date', now)).toBeNull();
+  });
+
+  test('age', () => {
+    expect(formatAge(0.2)).toBe('12 min ago');
+    expect(formatAge(3.4)).toBe('3 h ago');
+    expect(formatAge(50)).toBe('2 days ago');
   });
 });

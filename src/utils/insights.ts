@@ -80,6 +80,8 @@ export interface StoreHealth {
 export interface Overview {
   runId: string;
   fetchedAtBrt: string;
+  /** Newest UTC timestamp of the run. */
+  fetchedAt: string;
   skus: number;
   checked: number;
   priced: number;
@@ -138,6 +140,10 @@ export const computeOverview = (rows: PriceRow[]): Overview => {
   return {
     runId: rows[0]?.runId ?? '',
     fetchedAtBrt: latest,
+    fetchedAt: rows.reduce(
+      (max, r) => (r.fetchedAt > max ? r.fetchedAt : max),
+      '',
+    ),
     skus: new Set(rows.map((r) => r.ean)).size,
     checked: sum('checked'),
     priced: sum('priced'),
@@ -200,4 +206,83 @@ export const buildHistory = (rows: PriceRow[]): HistorySeries => {
     };
   });
   return { stores, points, summary };
+};
+
+// ---------- store comparison: who is cheapest, and by how much ----------
+
+export interface StoreComparison {
+  store: string;
+  /** SKUs where this store and at least one other store have a purchasable price. */
+  compared: number;
+  /** Of those, SKUs where this store is (tied) cheapest. */
+  wins: number;
+  /** Mean of (price / cheapest - 1) over the compared SKUs; 0 = always cheapest. */
+  avgPremium: number | null;
+  /** Share of this store's purchasable prices below its own list price. */
+  promoShare: number | null;
+}
+
+export const storeComparison = (rows: PriceRow[]): StoreComparison[] => {
+  const comparable = rows.filter((r) => isPriced(r) && r.available !== false);
+  const bySku = new Map<string, PriceRow[]>();
+  for (const row of comparable) {
+    bySku.set(row.ean, [...(bySku.get(row.ean) ?? []), row]);
+  }
+  const stats = new Map<
+    string,
+    {
+      compared: number;
+      wins: number;
+      premium: number;
+      priced: number;
+      promo: number;
+    }
+  >();
+  const entry = (store: string) => {
+    const s = stats.get(store) ?? {
+      compared: 0,
+      wins: 0,
+      premium: 0,
+      priced: 0,
+      promo: 0,
+    };
+    stats.set(store, s);
+    return s;
+  };
+  for (const store of new Set(rows.map((r) => r.store))) entry(store);
+  for (const row of comparable) {
+    const s = entry(row.store);
+    s.priced += 1;
+    if (row.listPrice != null && row.price != null && row.listPrice > row.price)
+      s.promo += 1;
+  }
+  for (const offers of bySku.values()) {
+    if (new Set(offers.map((o) => o.store)).size < 2) continue;
+    const min = Math.min(...offers.map((o) => o.price as number));
+    if (min <= 0) continue;
+    for (const offer of offers) {
+      const s = entry(offer.store);
+      s.compared += 1;
+      s.premium += (offer.price as number) / min - 1;
+      if (offer.price === min) s.wins += 1;
+    }
+  }
+  return [...stats.entries()]
+    .map(([store, s]) => ({
+      store,
+      compared: s.compared,
+      wins: s.wins,
+      avgPremium: s.compared ? s.premium / s.compared : null,
+      promoShare: s.priced ? s.promo / s.priced : null,
+    }))
+    .sort((a, b) => {
+      if (a.avgPremium == null || b.avgPremium == null) {
+        return a.avgPremium == null
+          ? b.avgPremium == null
+            ? byText(a.store, b.store)
+            : 1
+          : -1;
+      }
+      return a.avgPremium - b.avgPremium || byText(a.store, b.store);
+    });
 };

@@ -21,8 +21,12 @@
 }
 
 .run {
-  color: var(--muted);
+  align-items: center;
+  color: var(--text-2);
+  display: inline-flex;
+  flex-wrap: wrap;
   font-size: 13px;
+  gap: 4px 12px;
 }
 
 .tabs {

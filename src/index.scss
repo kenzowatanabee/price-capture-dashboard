@@ -1,18 +1,49 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,400italic');
 
 :root {
-  --bg: #f5f6f8;
+  /* chrome & ink (dataviz reference palette, light mode) */
+  --bg: #f9f9f7;
   --surface: #ffffff;
-  --border: #e1e4e8;
-  --text: #1f2328;
-  --muted: #656d76;
-  --accent: #1a73e8;
-  --good: #1a7f37;
-  --good-bg: #dafbe1;
-  --warn: #9a6700;
-  --warn-bg: #fff8c5;
-  --bad: #cf222e;
-  --bad-bg: #ffebe9;
+  --text: #0b0b0b;
+  --text-2: #52514e;
+  --muted: #898781;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.1);
+  --hover: rgba(11, 11, 11, 0.04);
+
+  /* categorical slots, fixed order (validated: scripts/validate_palette.js, light, #ffffff) */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --series-5: #e87ba4;
+  --series-6: #008300;
+  --series-7: #6250d6;
+  --series-8: #e34948;
+  --context: #c3c2b7; /* de-emphasised series */
+
+  /* sequential blue (magnitude) */
+  --blue-100: #cde2fb;
+  --blue-150: #b7d3f6;
+  --blue-200: #9ec5f4;
+  --blue-300: #6da7ec;
+  --blue-450: #2a78d6;
+  --blue-600: #184f95;
+
+  /* status: never colour alone, always with an icon and a label */
+  --good: #0ca30c;
+  --good-text: #006300;
+  --warning: #fab219;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+
+  /* aliases used by older styles */
+  --accent: var(--series-1);
+  --bad: var(--critical);
+  --good-bg: #e3f5e3;
+  --warn-bg: #fdf3d8;
+  --warn: #7a5200;
 
   color: var(--text);
   background-color: var(--bg);
@@ -56,6 +87,16 @@ td {
 }
 
 th {
-  color: var(--muted);
+  color: var(--text-2);
+  font-size: 12px;
   font-weight: 600;
+}
+
+td {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--series-1);
+  outline-offset: 2px;
 }

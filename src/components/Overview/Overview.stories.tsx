@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { latestRun } from 'fixtures/prices';
-import { computeOverview } from 'utils/insights';
+import { computeOverview, storeComparison } from 'utils/insights';
 
 import { Overview } from './Overview';
 
@@ -16,5 +16,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const LatestRun: Story = {
-  args: { overview: computeOverview(latestRun) },
+  args: {
+    overview: computeOverview(latestRun),
+    comparison: storeComparison(latestRun),
+  },
 };
