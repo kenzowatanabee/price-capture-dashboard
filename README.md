@@ -23,7 +23,7 @@ The interface is in Brazilian Portuguese, for the Brazil sales and retail market
   - A product that a store only sells through a marketplace partner (`seller_type = partner`) shows "Partner only" with no price, because that is not the store's own price. The partner and its price are in the price history tab.
   - **Export CSV** downloads what is on screen, one line per store and SKU. The file uses `;` as the separator and a decimal comma, so it opens directly in Brazilian Excel.
   - Search by words in any order or by EAN (accents ignored, e.g. `total 90g`), sort by the biggest price gap, and click a SKU to open its history.
-  - Every price is a link to that store's own product page, so it can be checked at the source. Missing prices (e.g. out of stock) link too when the store has a page for the product.
+  - Every price is a link to that store's own product page, so it can be checked at the source. Domo runs the app in a sandboxed frame where ordinary links to other sites do nothing, so inside Domo the click is handed to Domo, which opens the page in a new tab (the same message `domo.navigate(url, true)` sends). Missing prices (e.g. out of stock) link too when the store has a page for the product.
   - Each SKU shows a product picture, loaded from the store's own site (`image_url`). When a store sent none, or it fails to load, a neutral tile takes its place. Hover a picture for a large preview.
 - **Price history:** one step line per store, one point per day (the last price of that day).
   - A product header shows the picture, the lowest price of the latest run and a link to that store's page. Its search box finds another product by name or EAN.

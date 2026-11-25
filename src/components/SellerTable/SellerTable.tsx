@@ -1,4 +1,5 @@
 import { Card } from 'components/charts/StatTile';
+import { ExternalLink } from 'components/ExternalLink/ExternalLink';
 import { type FC } from 'react';
 import type { PriceRow } from 'services/prices';
 import { formatBRL } from 'utils/format';
@@ -77,9 +78,7 @@ export const SellerTable: FC<SellerTableProps> = ({ rows }) => {
                   <td>{priced(row) ? canBuy(row) : '—'}</td>
                   <td>
                     {href ? (
-                      <a href={href} target="_blank" rel="noreferrer">
-                        Abrir ↗
-                      </a>
+                      <ExternalLink href={href}>Abrir ↗</ExternalLink>
                     ) : (
                       '—'
                     )}

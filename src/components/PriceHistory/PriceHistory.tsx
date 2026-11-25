@@ -1,4 +1,5 @@
 import { ExportButton } from 'components/ExportButton/ExportButton';
+import { ExternalLink } from 'components/ExternalLink/ExternalLink';
 import { ProductThumb } from 'components/ProductThumb/ProductThumb';
 import { SellerTable } from 'components/SellerTable/SellerTable';
 import { SkuPicker } from 'components/SkuPicker/SkuPicker';
@@ -101,9 +102,9 @@ export const PriceHistory: FC<PriceHistoryProps> = ({
                 lojas
               </span>
               {link && /^https?:\/\//i.test(link) && (
-                <a href={link} target="_blank" rel="noreferrer">
+                <ExternalLink href={link}>
                   Abrir em {lowestStore} ↗
-                </a>
+                </ExternalLink>
               )}
             </p>
           )}

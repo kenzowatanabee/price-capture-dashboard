@@ -1,5 +1,6 @@
 import { Dropdown } from 'components/Dropdown/Dropdown';
 import { ExportButton } from 'components/ExportButton/ExportButton';
+import { ExternalLink } from 'components/ExternalLink/ExternalLink';
 import { ProductThumb } from 'components/ProductThumb/ProductThumb';
 import { type FC, type ReactNode, useMemo, useState } from 'react';
 import type { PriceRow } from 'services/prices';
@@ -49,15 +50,13 @@ const StoreLink: FC<{ row: PriceRow; children: ReactNode }> = ({
   const href = pageUrl(row.url);
   if (!href) return <>{children}</>;
   return (
-    <a
+    <ExternalLink
       className={styles.link}
       href={href}
-      target="_blank"
-      rel="noreferrer"
       aria-label={`${row.store}: ${typeof children === 'string' ? children : ''} (abre a página da loja)`}
     >
       {children}
-    </a>
+    </ExternalLink>
   );
 };
 

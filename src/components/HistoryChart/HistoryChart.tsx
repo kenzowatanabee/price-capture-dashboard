@@ -1,3 +1,4 @@
+import { ExternalLink } from 'components/ExternalLink/ExternalLink';
 import { type FC, useState } from 'react';
 import {
   CartesianGrid,
@@ -305,16 +306,14 @@ export const HistoryChart: FC<HistoryChartProps> = ({
                   <span className={styles.num}>{formatAmount(s.max)}</span>
                 </button>
                 {pageUrl(s.url) ? (
-                  <a
+                  <ExternalLink
                     className={styles.open}
                     href={pageUrl(s.url)!}
-                    target="_blank"
-                    rel="noreferrer"
                     aria-label={`Abrir a página do produto em ${s.store}`}
                     title={`Abrir a página do produto em ${s.store}`}
                   >
                     ↗
-                  </a>
+                  </ExternalLink>
                 ) : (
                   <span className={styles.open} />
                 )}
