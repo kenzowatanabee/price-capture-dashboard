@@ -89,6 +89,7 @@ export default defineConfig(({ command }: ConfigInput) => {
     test: {
       globals: true,
       environment: 'jsdom',
+      setupFiles: ['./jest.setup.ts'],
     },
     build: {
       outDir: buildDir,

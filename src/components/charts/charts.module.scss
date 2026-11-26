@@ -1,0 +1,214 @@
+// ---------- card ----------
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px 24px;
+}
+
+.cardHeader {
+  h2 {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  p {
+    color: var(--text-2);
+    font-size: 13px;
+    line-height: 1.45;
+    margin: 4px 0 0;
+  }
+}
+
+// ---------- stat tile (borderless: the strip around it draws the dividers) ----------
+.tile {
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px 24px;
+}
+
+.tileLabel {
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.tileValue {
+  font-size: 36px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.tileDetail {
+  align-items: center;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12px;
+  gap: 6px;
+}
+
+// ---------- status tag ----------
+.status {
+  align-items: center;
+  color: var(--text-2);
+  display: inline-flex;
+  font-size: 12px;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.statusIcon {
+  align-items: center;
+  border-radius: 50%;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 9px;
+  font-weight: 700;
+  height: 14px;
+  justify-content: center;
+  width: 14px;
+}
+
+.good {
+  background: var(--good);
+}
+
+.warning {
+  background: var(--warning);
+  color: var(--text);
+}
+
+.critical {
+  background: var(--critical);
+}
+
+// ---------- ranked bars ----------
+.ranked {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rankedRow {
+  align-items: center;
+  border-radius: 6px;
+  display: grid;
+  gap: 2px 12px;
+  grid-template-columns: minmax(120px, 190px) minmax(120px, 1fr);
+  padding: 8px;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--hover);
+  }
+}
+
+.rankedLabel {
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rankedDetail {
+  color: var(--muted);
+  font-size: 11px;
+  grid-column: 2;
+}
+
+// the bar and its value, value printed at the bar's tip
+.track {
+  align-items: center;
+  border-left: 1px solid var(--axis); // the shared baseline
+  display: flex;
+  gap: 6px;
+  min-height: 18px;
+}
+
+.bar {
+  background: var(--series-1);
+  border-radius: 0 4px 4px 0; // rounded data end, square at the baseline
+  flex: none;
+  height: 12px;
+}
+
+.rankedValue {
+  flex: none;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+// ---------- meter list ----------
+.meters {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.meterRow {
+  align-items: center;
+  border-radius: 6px;
+  display: grid;
+  gap: 4px 10px;
+  grid-template-columns: minmax(120px, 170px) minmax(80px, 1fr) 56px;
+  padding: 8px;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--hover);
+  }
+}
+
+.meterTrack {
+  background: var(--blue-100);
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.meterFill {
+  background: var(--blue-450);
+  border-radius: 4px;
+  height: 8px;
+}
+
+.meterValue {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-align: right;
+}
+
+.meterExtra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  grid-column: 1 / -1;
+  padding-left: 2px;
+}
+
+.empty {
+  color: var(--muted);
+  font-size: 13px;
+  padding: 12px 0;
+}

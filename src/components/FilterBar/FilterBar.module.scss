@@ -1,0 +1,48 @@
+.FilterBar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-raised);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 18px 12px;
+}
+
+.fields {
+  display: grid;
+  gap: 10px 12px;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  min-width: 0;
+}
+
+.summary {
+  align-items: center;
+  color: var(--text-2);
+  display: flex;
+  font-size: 13px;
+  gap: 12px;
+  justify-content: flex-end;
+  white-space: nowrap;
+
+  button {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text);
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+
+    &:hover:not(:disabled) {
+      background: var(--hover);
+    }
+
+    &:disabled {
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+  }
+}

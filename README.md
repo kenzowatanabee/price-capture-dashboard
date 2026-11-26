@@ -1,3 +1,65 @@
+# Price Capture Dashboard
+
+A Domo custom app for the prices collected by [price-capture](https://github.com/kenzowatanabee/price-capture): the latest run at a glance, a store × SKU price matrix, and each SKU's price over time.
+
+## Screens
+
+The interface is in Brazilian Portuguese, for the Brazil sales and retail marketing teams: all labels and messages, percentages with a decimal comma, and dates as dd/mm/yyyy. The descriptions below use the English names of each screen; in the app they are Visão geral, Produtos, Matriz de preços and Histórico de preços.
+
+- **Header:** a headline that names the cheapest store of the latest run, when that run happened (Brasília time), and a warning when no new run has arrived for more than 30 hours.
+  - The font (Inter) is bundled with the app, so it needs no external font service inside Domo.
+- **Product filters:** one dropdown per segmentation field (category, sub-category, supplier, brand, sub-brand, segment, subsegment), shown on every tab. A choice narrows all tabs at once. Each dropdown only offers values that still lead to products, with the number of products beside it. A dropdown with more than 8 options gets a search box.
+  - The segmentation comes from a second dataset (`fct_drugs_price_snapshots` in the manifest). If it cannot be loaded, the app still works and says the filters are unavailable.
+- **Products:** one card per product with its picture, segmentation, lowest price and where, how many stores sell it themselves, and the price gap. Search, sort, and click a card to open its history.
+- **Overview:**
+  - Tiles for the share of checks with a price, the share that can actually be bought (VTEX cart check), the SKU × store grid and errors.
+  - **Price position:** each store's average premium over the cheapest purchasable offer of the same SKU, cheapest store first, with how often it is the cheapest and how much of it is on promotion.
+  - **Coverage:** SKUs with a price per store, plus the main reasons a price is missing (Not listed, Out of stock, ...).
+- **Price matrix:** each SKU's latest price at every store, store columns in the same cheapest-first order.
+  - All store columns share the width equally, so every store fits on one screen. Prices are in R$, stated once in the legend.
+  - Every price shows its premium over the lowest ("+13.3%"), and the cell tint gets darker as the premium grows. The lowest is marked "▼ Lowest".
+  - A badge shows the discount against the store's own list price.
+  - A price that cannot be bought is struck through, and is left out of the lowest price and the price gap.
+  - A product that a store only sells through a marketplace partner (`seller_type = partner`) shows "Partner only" with no price, because that is not the store's own price. The partner and its price are in the price history tab.
+  - **Export CSV** downloads what is on screen, one line per store and SKU. The file uses `;` as the separator and a decimal comma, so it opens directly in Brazilian Excel.
+  - Search by words in any order or by EAN (accents ignored, e.g. `total 90g`), sort by the biggest price gap, and click a SKU to open its history.
+  - Every price is a link to that store's own product page, so it can be checked at the source. Domo runs the app in a sandboxed frame where ordinary links to other sites do nothing, so inside Domo the click is handed to Domo, which opens the page in a new tab (the same message `domo.navigate(url, true)` sends). Missing prices (e.g. out of stock) link too when the store has a page for the product.
+  - Each SKU shows a product picture, loaded from the store's own site (`image_url`). When a store sent none, or it fails to load, a neutral tile takes its place. Hover a picture for a large preview.
+- **Price history:** one step line per store, one point per day (the last price of that day).
+  - A product header shows the picture, the lowest price of the latest run and a link to that store's page. Its search box finds another product by name or EAN.
+  - Up to 3 stores are highlighted in colour and the rest stay grey. Click a store in the side list to swap.
+  - Hover for every store's price on that day, or switch to the table view.
+  - The side list shows each store's latest, lowest and highest price, with a link to the store's product page.
+  - **Sellers in the latest run** lists who sells the product on each store's site (the store itself or a partner, tagged), with price, list price, whether it can be bought, and a link to the page. A store with several sellers for the product gets one line per seller.
+  - **Export this product's history** downloads every recorded row for the product.
+
+## Data
+
+The dataset can hold several rows per store and product in one run: the main row, plus one per other seller on the store's site (`main_offer = false`). The app compares and counts main rows only; the other rows feed the sellers table.
+
+The app reads the `PRICE_TRACKER` dataset (`664c99b0-c76b-4800-b46e-b36de6e7bc71`) through Domo's SQL API, under the alias `prices` declared in `public/manifest.json`. If the dataset is ever replaced, update `dataSetId` there.
+
+- The latest run is the most recent `run_id`. Older rows without a `run_id` still appear in the history.
+- Domo returns every value as text. `src/services/prices.ts` turns the rows into typed values.
+- Queries are filtered in Domo: the app never downloads the whole dataset.
+
+## Development
+
+```bash
+pnpm install
+domo login                 # ryuu CLI, once per Domo instance
+pnpm start                 # dev server, proxies data calls to your Domo instance
+pnpm test                  # unit and component tests (a fake Domo, no network)
+pnpm storybook             # every screen with sample data, no Domo needed
+pnpm upload                # build and publish to Domo
+```
+
+`pnpm start` and `pnpm upload` need Domo's global CLIs (`@domoinc/da` and `ryuu`), as described in the template notes below.
+
+Code layout: `services/` (Domo queries), `utils/insights.ts` (matrix, overview and history logic), `reducers/prices/` (state), `components/` (screens), and `fixtures/` (sample data for tests and stories).
+
+---
+
 > ### This project was bootstrapped with [Vite](https://vitejs.dev/).
 
 # DomoApps Advanced App Platform Template

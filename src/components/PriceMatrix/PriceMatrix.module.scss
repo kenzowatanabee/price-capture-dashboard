@@ -1,0 +1,307 @@
+.PriceMatrix {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.controls {
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 13px;
+  gap: 10px 18px;
+  padding: 14px 16px;
+
+  input[type='search'],
+  select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font: inherit;
+    padding: 8px 12px;
+  }
+
+  input[type='search'] {
+    min-width: 280px;
+  }
+
+  input[type='checkbox'] {
+    accent-color: var(--text);
+  }
+
+  label {
+    align-items: center;
+    color: var(--text-2);
+    display: inline-flex;
+    gap: 6px;
+  }
+}
+
+.sort {
+  min-width: 250px;
+}
+
+.count {
+  color: var(--muted);
+  margin-left: auto;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-raised);
+  overflow: hidden;
+
+  th,
+  td {
+    padding: 7px 8px;
+  }
+
+  thead th {
+    font-size: 11px;
+    line-height: 1.25;
+    vertical-align: bottom;
+    white-space: normal;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  // every store column gets the same share of the width, so all of them fit on screen
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 880px;
+    table-layout: fixed;
+  }
+
+  thead th {
+    background: var(--surface);
+    border-bottom: 1px solid var(--axis);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  tbody tr:hover td {
+    box-shadow: inset 0 0 0 9999px var(--hover);
+  }
+}
+
+.scroll {
+  max-height: max(320px, calc(100vh - 318px));
+  overflow: auto;
+}
+
+// pinned SKU column
+.sku {
+  background: var(--surface);
+  border-right: 1px solid var(--grid);
+  left: 0;
+  font-size: 12px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  position: sticky;
+  white-space: normal;
+  z-index: 1;
+
+  button {
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+    padding: 0;
+    text-align: left;
+
+    &:hover {
+      color: var(--series-1);
+      text-decoration: underline;
+    }
+  }
+
+  .ean {
+    color: var(--muted);
+    font-size: 11px;
+  }
+}
+
+thead .sku {
+  z-index: 3;
+}
+
+.card .sku {
+  padding-left: 16px;
+}
+
+.colSku {
+  width: 23%;
+}
+
+.card .none {
+  color: var(--text-2);
+  padding: 40px 16px;
+  text-align: center;
+}
+
+.skuBody {
+  align-items: flex-start;
+  display: flex;
+  gap: 10px;
+}
+
+.colGap {
+  width: 112px;
+}
+
+.num {
+  text-align: right;
+}
+
+.cell {
+  font-size: 13px;
+  text-align: right;
+  vertical-align: top;
+  white-space: normal;
+
+  > div:first-child {
+    white-space: nowrap;
+  }
+}
+
+.price {
+  font-variant-numeric: tabular-nums;
+}
+
+// a price that opens the store's page: looks like the number until hovered
+.link {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--blue-600);
+    text-decoration: underline;
+  }
+}
+
+.sub {
+  color: var(--text-2);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  margin-top: 1px;
+}
+
+// premium over the lowest price: one hue, light -> darker
+.step0 .price {
+  font-weight: 700;
+}
+.step1 {
+  background: rgba(42, 120, 214, 0.07);
+}
+.step2 {
+  background: rgba(42, 120, 214, 0.15);
+}
+.step3 {
+  background: rgba(42, 120, 214, 0.25);
+}
+.step4 {
+  background: rgba(42, 120, 214, 0.38);
+}
+
+.notPurchasable .price {
+  color: var(--text-2);
+  text-decoration: line-through;
+}
+
+.missing {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.promo {
+  border: 1px solid var(--axis);
+  border-radius: 8px;
+  color: var(--text-2);
+  font-size: 9.5px;
+  font-weight: 600;
+  margin-left: 3px;
+  padding: 0 3px;
+  vertical-align: 1px;
+}
+
+.warnIcon {
+  align-items: center;
+  background: var(--warning);
+  border-radius: 50%;
+  color: var(--text);
+  display: inline-flex;
+  font-size: 9px;
+  font-weight: 700;
+  height: 12px;
+  justify-content: center;
+  margin-right: 4px;
+  vertical-align: 1px;
+  width: 12px;
+}
+
+// spread column: value + a thin bar on a shared scale
+.spread {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.spreadTrack {
+  border-left: 1px solid var(--axis);
+  display: inline-block;
+  height: 6px;
+  width: 28px;
+}
+
+.spreadBar {
+  background: var(--series-1);
+  border-radius: 0 3px 3px 0;
+  display: block;
+  height: 6px;
+}
+
+.legend {
+  align-items: center;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  color: var(--text-2);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12px;
+  gap: 8px 20px;
+  padding: 12px 16px;
+}
+
+.scale {
+  align-items: center;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.scaleStep {
+  align-items: center;
+  display: inline-flex;
+  gap: 4px;
+}
+
+.swatch {
+  border: 1px solid var(--grid);
+  border-radius: 2px;
+  display: inline-block;
+  height: 12px;
+  width: 18px;
+}

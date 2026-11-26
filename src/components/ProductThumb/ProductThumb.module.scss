@@ -1,0 +1,29 @@
+.thumb {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: inline-block;
+  flex: none;
+  overflow: hidden;
+
+  img {
+    background: #ffffff;
+    box-sizing: border-box;
+    display: block;
+    height: 100%;
+    object-fit: contain;
+    padding: 8%;
+    width: 100%;
+  }
+}
+
+.preview {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 18px 44px -10px rgba(11, 11, 11, 0.3);
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed;
+  z-index: 50;
+}
